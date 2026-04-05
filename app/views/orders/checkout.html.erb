@@ -1,0 +1,283 @@
+<% content_for :title, "Checkout — Avi Lace Studio" %>
+
+<% content_for :head do %>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<% end %>
+
+<div class="checkout-page">
+  <h1 class="page-title">Checkout</h1>
+
+  <div class="checkout-layout">
+    <!-- Address & Payment Form -->
+    <div class="checkout-form">
+
+      <!-- Step 1: Delivery Address -->
+      <section class="checkout-section">
+        <h2><span class="step-num">1</span> Delivery Address</h2>
+        <% if @addresses.any? %>
+          <div class="address-list" id="address-list">
+            <% @addresses.each_with_index do |addr, i| %>
+              <label class="address-option">
+                <input type="radio" name="shipping_address_id" value="<%= addr.id %>" <%= "checked" if i == 0 %>>
+                <div class="address-option__body">
+                  <strong><%= addr.full_name %></strong>
+                  <span class="address-type-badge"><%= addr.address_type.humanize %></span>
+                  <p><%= addr.address_line1 %><%= ", #{addr.address_line2}" if addr.address_line2.present? %></p>
+                  <p><%= addr.city %>, <%= addr.state %> — <%= addr.pincode %></p>
+                  <p>&#128222; <%= addr.phone %></p>
+                </div>
+              </label>
+            <% end %>
+          </div>
+          <p style="margin-top: 12px;"><%= link_to "+ Add New Address", new_account_address_path, class: "link" %></p>
+        <% else %>
+          <div class="alert-box">
+            No saved addresses.
+            <%= link_to "Add an address first", new_account_address_path, class: "link" %>
+          </div>
+        <% end %>
+      </section>
+
+      <!-- Step 2: Order Notes -->
+      <section class="checkout-section">
+        <h2><span class="step-num">2</span> Order Notes <small>(Optional)</small></h2>
+        <textarea id="order-notes" placeholder="Any special instructions for your order..." class="form-textarea" rows="3"></textarea>
+      </section>
+
+      <!-- Step 3: Payment Method -->
+      <section class="checkout-section">
+        <h2><span class="step-num">3</span> Payment Method</h2>
+        <div class="payment-options">
+          <label class="payment-option" id="pay-razorpay">
+            <input type="radio" name="payment_method" value="razorpay" checked>
+            <div class="payment-option__body">
+              <strong>Pay Online</strong>
+              <span>UPI, Cards, Net Banking, Wallets via Razorpay</span>
+              <div class="payment-icons">
+                <span class="pay-icon">UPI</span>
+                <span class="pay-icon">VISA</span>
+                <span class="pay-icon">MC</span>
+                <span class="pay-icon">NB</span>
+              </div>
+            </div>
+          </label>
+          <label class="payment-option" id="pay-cod">
+            <input type="radio" name="payment_method" value="cod">
+            <div class="payment-option__body">
+              <strong>Cash on Delivery</strong>
+              <span>Pay when your order arrives</span>
+            </div>
+          </label>
+        </div>
+      </section>
+
+      <!-- Place Order Button -->
+      <button id="place-order-btn" class="btn btn--primary btn--lg btn--full" <%= "disabled" unless @addresses.any? %>>
+        <span id="btn-text">Place Order</span>
+        <span id="btn-spinner" style="display:none;">Processing...</span>
+      </button>
+
+      <% unless @addresses.any? %>
+        <p class="text-center text-muted" style="margin-top: 10px; font-size: 13px;">
+          Please <%= link_to "add a delivery address", new_account_address_path, class: "link" %> to continue.
+        </p>
+      <% end %>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="checkout-summary">
+      <h2>Order Summary</h2>
+      <% @cart.cart_items.includes(:product).each do |item| %>
+        <div class="checkout-summary__item">
+          <span class="checkout-summary__name"><%= item.product.name %> &times;<%= item.quantity %></span>
+          <span>&#8377;<%= number_with_precision(item.subtotal, precision: 2) %></span>
+        </div>
+      <% end %>
+      <hr style="border-color: var(--color-border); margin: 12px 0;">
+      <div class="checkout-summary__row">
+        <span>Subtotal</span>
+        <span>&#8377;<%= number_with_precision(@cart.total, precision: 2) %></span>
+      </div>
+      <div class="checkout-summary__row">
+        <span>Shipping</span>
+        <span class="text-success">Free</span>
+      </div>
+      <div class="checkout-summary__total">
+        <span>Total</span>
+        <span>&#8377;<%= number_with_precision(@cart.total, precision: 2) %></span>
+      </div>
+      <p class="secure-badge">&#128274; Secure Checkout</p>
+    </div>
+  </div>
+</div>
+
+<script nonce="<%= content_security_policy_nonce %>">
+  const placeOrderBtn = document.getElementById("place-order-btn");
+  const btnText       = document.getElementById("btn-text");
+  const btnSpinner    = document.getElementById("btn-spinner");
+
+  placeOrderBtn.addEventListener("click", async () => {
+    const addressInput = document.querySelector('input[name="shipping_address_id"]:checked');
+    if (!addressInput) {
+      alert("Please select a delivery address.");
+      return;
+    }
+
+    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+    const notes         = document.getElementById("order-notes").value;
+
+    // Disable button, show spinner
+    placeOrderBtn.disabled = true;
+    btnText.style.display    = "none";
+    btnSpinner.style.display = "inline";
+
+    try {
+      const response = await fetch("<%= place_orders_path %>", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          order: {
+            shipping_address_id: addressInput.value,
+            notes: notes
+          },
+          payment_method: paymentMethod
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert("Error: " + (data.errors || [data.message]).join(", "));
+        resetBtn();
+        return;
+      }
+
+      if (paymentMethod === "cod") {
+        window.location.href = data.redirect_url;
+        return;
+      }
+
+      // Razorpay payment popup
+      const options = {
+        key:          data.razorpay_key,
+        amount:       data.amount,
+        currency:     data.currency,
+        name:         "Avi Lace Studio",
+        description:  "Order " + data.order_number,
+        order_id:     data.razorpay_order_id,
+        prefill: {
+          name:    data.customer_name,
+          email:   data.customer_email,
+          contact: data.customer_phone
+        },
+        theme: { color: "#b1655b" },
+        handler: async function(paymentResponse) {
+          // Verify payment on server
+          const verifyRes = await fetch("<%= payments_verify_path %>", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+              order_id:             data.order_id,
+              razorpay_order_id:    paymentResponse.razorpay_order_id,
+              razorpay_payment_id:  paymentResponse.razorpay_payment_id,
+              razorpay_signature:   paymentResponse.razorpay_signature
+            })
+          });
+
+          const verifyData = await verifyRes.json();
+
+          if (verifyData.status === "success") {
+            window.location.href = verifyData.redirect_url;
+          } else {
+            alert("Payment verification failed. Please contact support.");
+            resetBtn();
+          }
+        },
+        modal: {
+          ondismiss: function() {
+            resetBtn();
+          }
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.on("payment.failed", function(response) {
+        alert("Payment failed: " + response.error.description);
+        resetBtn();
+      });
+      rzp.open();
+
+    } catch (err) {
+      alert("Something went wrong. Please try again.");
+      resetBtn();
+    }
+  });
+
+  function resetBtn() {
+    placeOrderBtn.disabled   = false;
+    btnText.style.display    = "inline";
+    btnSpinner.style.display = "none";
+  }
+</script>
+
+<style nonce="<%= content_security_policy_nonce %>">
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px; height: 26px;
+    background: var(--color-rose);
+    color: white;
+    border-radius: 50%;
+    font-size: 13px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    margin-right: 8px;
+  }
+  .checkout-section h2 small {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--color-text-muted);
+    font-family: var(--font-body);
+  }
+  .address-type-badge {
+    display: inline-block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: var(--color-cream);
+    color: var(--color-brown);
+    padding: 2px 7px;
+    border-radius: 10px;
+    margin-left: 8px;
+    font-weight: 600;
+  }
+  .payment-option__body { display: flex; flex-direction: column; gap: 2px; }
+  .payment-option__body strong { font-size: 14px; color: var(--color-brown-dark); }
+  .payment-option__body span  { font-size: 13px; color: var(--color-text-muted); }
+  .payment-icons { display: flex; gap: 6px; margin-top: 6px; }
+  .pay-icon {
+    padding: 2px 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--color-brown);
+    background: white;
+  }
+  .text-success { color: var(--color-success); font-weight: 500; }
+  .text-muted   { color: var(--color-text-muted); }
+  .text-center  { text-align: center; }
+  .secure-badge {
+    text-align: center;
+    font-size: 12px;
+    color: var(--color-text-muted);
+    margin-top: 16px;
+  }
+</style>

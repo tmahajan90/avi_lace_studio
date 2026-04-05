@@ -1,0 +1,38 @@
+customer_home:
+  user: customer
+  full_name: Priya Sharma
+  phone: "9123456789"
+  address_line1: 12 Rose Apartments
+  address_line2: MG Road
+  city: Bengaluru
+  state: Karnataka
+  pincode: "560001"
+  country: India
+  address_type: 0
+  is_default: true
+
+customer_office:
+  user: customer
+  full_name: Priya Sharma
+  phone: "9123456789"
+  address_line1: 5th Floor, Tech Park
+  address_line2: Outer Ring Road
+  city: Bengaluru
+  state: Karnataka
+  pincode: "560103"
+  country: India
+  address_type: 1
+  is_default: false
+
+customer_two_home:
+  user: customer_two
+  full_name: Rahul Mehta
+  phone: "9234567890"
+  address_line1: 23 Shanti Nagar
+  address_line2: ""
+  city: Mumbai
+  state: Maharashtra
+  pincode: "400001"
+  country: India
+  address_type: 0
+  is_default: true

@@ -1,0 +1,33 @@
+Avi Lace Studio — Order Confirmed
+=====================================
+
+Hi <%= @user.name %>,
+
+Your order has been placed successfully!
+
+Order Number : <%= @order.order_number %>
+Date         : <%= @order.created_at.strftime("%d %b %Y") %>
+Payment      : <%= @order.payment_method == 'cod' ? 'Cash on Delivery' : 'Online (Razorpay)' %>
+Status       : <%= @order.payment_status == 'paid' ? 'Paid' : 'Pending' %>
+
+ITEMS
+-----
+<% @items.each do |item| %>
+<%= item.product_name %> x<%= item.quantity %>  —  Rs. <%= number_with_precision(item.total_price, precision: 2) %>
+<% end %>
+
+TOTAL: Rs. <%= number_with_precision(@order.total_amount, precision: 2) %>
+<% if @order.shipping_address.present? %>
+<% addr = @order.shipping_address %>
+DELIVERY ADDRESS
+----------------
+<%= addr.full_name %>
+<%= addr.address_line1 %><%= ", #{addr.address_line2}" if addr.address_line2.present? %>
+<%= addr.city %>, <%= addr.state %> — <%= addr.pincode %>
+Phone: <%= addr.phone %>
+<% end %>
+View your order: <%= account_order_url(@order) %>
+
+Questions? Reply to this email or WhatsApp us.
+
+© <%= Date.current.year %> Avi Lace Studio, Mumbai

@@ -1,0 +1,7 @@
+customer_cart:
+  user: customer
+  session_token: abc123token
+
+customer_two_cart:
+  user: customer_two
+  session_token: def456token

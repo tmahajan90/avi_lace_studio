@@ -1,0 +1,23 @@
+cotton_laces:
+  name: Cotton Laces
+  slug: cotton-laces
+  description: Beautiful handcrafted cotton laces for all occasions
+  image: cotton_laces.jpg
+
+silk_laces:
+  name: Silk Laces
+  slug: silk-laces
+  description: Premium silk laces with a lustrous finish
+  image: silk_laces.jpg
+
+embroidered_trims:
+  name: Embroidered Trims
+  slug: embroidered-trims
+  description: Intricate embroidered trims for sarees and suits
+  image: embroidered_trims.jpg
+
+sequin_borders:
+  name: Sequin Borders
+  slug: sequin-borders
+  description: Sparkling sequin borders for festive wear
+  image: sequin_borders.jpg

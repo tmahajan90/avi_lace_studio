@@ -1,0 +1,80 @@
+<header class="navbar">
+  <div class="navbar__container">
+    <button class="navbar__hamburger" id="hamburger-btn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <%= link_to root_path, class: "navbar__brand" do %>
+      <span class="navbar__brand-name">Avi Lace Studio</span>
+      <span class="navbar__brand-tagline">Laces &amp; Trims</span>
+    <% end %>
+
+    <form action="<%= products_path %>" method="get" class="navbar__search">
+      <input type="text" name="q[name_cont]" placeholder="Search laces, trims..." value="<%= params.dig(:q, :name_cont) %>" class="navbar__search-input">
+      <button type="submit" class="navbar__search-btn" aria-label="Search">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </form>
+
+    <nav class="navbar__actions">
+      <% if user_signed_in? %>
+        <%= link_to account_profile_path, class: "navbar__action-btn" do %>
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <% end %>
+        <%= link_to account_wishlists_path, class: "navbar__action-btn" do %>
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <% end %>
+      <% end %>
+      <%= link_to cart_path, class: "navbar__action-btn navbar__cart-btn" do %>
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <% count = current_cart.item_count rescue 0 %>
+        <% if count > 0 %>
+          <span class="navbar__cart-count"><%= count %></span>
+        <% end %>
+      <% end %>
+      <% if user_signed_in? %>
+        <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "btn btn--outline btn--sm" do %>Sign Out<% end %>
+        <% if current_user.admin? %>
+          <%= link_to admin_root_path, class: "btn btn--primary btn--sm" do %>Admin<% end %>
+        <% end %>
+      <% else %>
+        <%= link_to new_user_session_path, class: "btn btn--outline btn--sm" do %>Login<% end %>
+        <%= link_to new_user_registration_path, class: "btn btn--primary btn--sm" do %>Sign Up<% end %>
+      <% end %>
+    </nav>
+  </div>
+
+  <nav class="navbar__categories" id="categories-nav">
+    <div class="navbar__categories-inner">
+      <% Category.root_categories.each do |cat| %>
+        <%= link_to cat.name, category_path(cat.slug), class: "navbar__cat-link" %>
+      <% end %>
+      <%= link_to "All Products", products_path, class: "navbar__cat-link" %>
+      <%= link_to "✦ Lace Finder", lace_finder_path, class: "navbar__cat-link navbar__cat-link--highlight" %>
+    </div>
+  </nav>
+</header>
+
+<div class="navbar__mobile-menu" id="mobile-menu">
+  <div class="navbar__mobile-inner">
+    <form action="<%= products_path %>" method="get" class="navbar__mobile-search">
+      <input type="text" name="q[name_cont]" placeholder="Search..." class="navbar__search-input">
+      <button type="submit" class="navbar__search-btn">Search</button>
+    </form>
+    <% Category.root_categories.each do |cat| %>
+      <%= link_to cat.name, category_path(cat.slug), class: "navbar__mobile-link" %>
+    <% end %>
+    <%= link_to "All Products", products_path, class: "navbar__mobile-link" %>
+    <%= link_to "✦ Lace Finder", lace_finder_path, class: "navbar__mobile-link" style: "color: var(--color-rose); font-weight: 600;" %>
+    <hr>
+    <% if user_signed_in? %>
+      <%= link_to "My Profile", account_profile_path, class: "navbar__mobile-link" %>
+      <%= link_to "My Orders", account_orders_path, class: "navbar__mobile-link" %>
+      <%= link_to "Wishlist", account_wishlists_path, class: "navbar__mobile-link" %>
+      <%= link_to "Sign Out", destroy_user_session_path, data: { turbo_method: :delete }, class: "navbar__mobile-link" %>
+    <% else %>
+      <%= link_to "Login", new_user_session_path, class: "navbar__mobile-link" %>
+      <%= link_to "Sign Up", new_user_registration_path, class: "navbar__mobile-link" %>
+    <% end %>
+  </div>
+</div>

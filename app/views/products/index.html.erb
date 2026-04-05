@@ -1,0 +1,77 @@
+<% content_for :title, "Products — Avi Lace Studio" %>
+
+<div class="page-layout">
+  <!-- Sidebar Filters -->
+  <aside class="filter-sidebar">
+    <h3 class="filter-sidebar__title">Filters</h3>
+
+    <%= search_form_for @q, url: products_path, method: :get, html: { class: "filter-form" } do |f| %>
+      <div class="filter-group">
+        <label class="filter-group__label">Search</label>
+        <%= f.search_field :name_cont, placeholder: "Search products...", class: "form-input" %>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-group__label">Category</label>
+        <% @categories.each do |cat| %>
+          <label class="filter-check">
+            <input type="radio" name="category_id" value="<%= cat.id %>"
+              <%= "checked" if params[:category_id].to_s == cat.id.to_s %>>
+            <span><%= cat.name %></span>
+          </label>
+        <% end %>
+        <label class="filter-check">
+          <input type="radio" name="category_id" value="" <%= "checked" if params[:category_id].blank? %>>
+          <span>All Categories</span>
+        </label>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-group__label">Price Range</label>
+        <div class="price-range">
+          <input type="number" name="min_price" value="<%= params[:min_price] %>" placeholder="Min &#8377;" class="form-input">
+          <span>—</span>
+          <input type="number" name="max_price" value="<%= params[:max_price] %>" placeholder="Max &#8377;" class="form-input">
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-group__label">Sort By</label>
+        <%= f.select :s, [["Newest First", "created_at desc"], ["Price: Low to High", "price asc"], ["Price: High to Low", "price desc"], ["Name A-Z", "name asc"]], { include_blank: "Default" }, class: "form-select" %>
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--full">Apply Filters</button>
+      <%= link_to "Clear Filters", products_path, class: "btn btn--outline btn--full" %>
+    <% end %>
+  </aside>
+
+  <!-- Product Listing -->
+  <div class="product-listing">
+    <div class="product-listing__header">
+      <h1 class="product-listing__title">
+        <% if @current_category %>
+          <%= @current_category.name %>
+        <% else %>
+          All Products
+        <% end %>
+      </h1>
+      <p class="product-listing__count"><%= @products.total_count %> products found</p>
+    </div>
+
+    <% if @products.any? %>
+      <div class="product-grid">
+        <% @products.each do |product| %>
+          <%= render "products/card", product: product %>
+        <% end %>
+      </div>
+      <div class="pagination">
+        <%= paginate @products %>
+      </div>
+    <% else %>
+      <div class="empty-state">
+        <p>No products found. Try adjusting your filters.</p>
+        <%= link_to "View All Products", products_path, class: "btn btn--primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

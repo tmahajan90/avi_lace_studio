@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>My Account — Avi Lace Studio</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="UTF-8">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body>
+    <%= render "layouts/navbar" %>
+    <% if notice.present? %>
+      <div class="flash flash--notice"><%= notice %></div>
+    <% end %>
+    <% if alert.present? %>
+      <div class="flash flash--alert"><%= alert %></div>
+    <% end %>
+    <div class="account-layout">
+      <aside class="account-sidebar">
+        <h3>My Account</h3>
+        <nav>
+          <%= link_to "Profile", account_profile_path, class: "account-sidebar__link" %>
+          <%= link_to "My Orders", account_orders_path, class: "account-sidebar__link" %>
+          <%= link_to "Addresses", account_addresses_path, class: "account-sidebar__link" %>
+          <%= link_to "Wishlist", account_wishlists_path, class: "account-sidebar__link" %>
+          <%= link_to "Sign Out", destroy_user_session_path, data: { turbo_method: :delete }, class: "account-sidebar__link account-sidebar__link--danger" %>
+        </nav>
+      </aside>
+      <main class="account-content">
+        <%= yield %>
+      </main>
+    </div>
+    <%= render "layouts/footer" %>
+  </body>
+</html>

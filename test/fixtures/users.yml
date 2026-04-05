@@ -1,0 +1,20 @@
+admin:
+  name: Admin User
+  email: admin@avilacestudio.com
+  encrypted_password: <%= BCrypt::Password.create("password123") %>
+  role: 1
+  phone: "9876543210"
+
+customer:
+  name: Priya Sharma
+  email: priya@example.com
+  encrypted_password: <%= BCrypt::Password.create("password123") %>
+  role: 0
+  phone: "9123456789"
+
+customer_two:
+  name: Rahul Mehta
+  email: rahul@example.com
+  encrypted_password: <%= BCrypt::Password.create("password123") %>
+  role: 0
+  phone: "9234567890"

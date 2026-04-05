@@ -1,0 +1,16 @@
+<h2>My Profile</h2>
+<div class="profile-card">
+  <p><strong>Name:</strong> <%= current_user.name %></p>
+  <p><strong>Email:</strong> <%= current_user.email %></p>
+  <p><strong>Phone:</strong> <%= current_user.phone || "Not provided" %></p>
+  <p><strong>Member Since:</strong> <%= current_user.created_at.strftime("%B %Y") %></p>
+  <div style="margin-top: 16px; display: flex; gap: 10px;">
+    <%= link_to "Edit Profile", edit_account_profile_path, class: "btn btn--primary" %>
+    <%= link_to "Change Password", edit_user_registration_path, class: "btn btn--outline" %>
+  </div>
+</div>
+<style nonce="<%= content_security_policy_nonce %>">
+  h2 { font-size: 26px; margin-bottom: 20px; }
+  .profile-card { background: white; border-radius: 11px; padding: 24px; box-shadow: 0 1px 3px rgba(38,32,26,.08); }
+  .profile-card p { font-size: 15px; margin-bottom: 12px; }
+</style>

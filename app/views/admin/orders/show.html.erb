@@ -1,0 +1,63 @@
+<div class="admin-page-header">
+  <h1>Order <%= @order.order_number %></h1>
+  <%= link_to "Back to Orders", admin_orders_path, class: "btn btn--outline" %>
+</div>
+
+<div class="order-detail-grid">
+  <div class="admin-card">
+    <h3>Order Items</h3>
+    <table class="admin-table">
+      <thead><tr><th>Product</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead>
+      <tbody>
+        <% @order_items.each do |item| %>
+          <tr>
+            <td><%= item.product_name %></td>
+            <td><%= item.quantity %></td>
+            <td>&#8377;<%= number_with_precision(item.unit_price, precision: 2) %></td>
+            <td>&#8377;<%= number_with_precision(item.total_price, precision: 2) %></td>
+          </tr>
+        <% end %>
+        <tr>
+          <td colspan="3"><strong>Total</strong></td>
+          <td><strong>&#8377;<%= number_with_precision(@order.total_amount, precision: 2) %></strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div>
+    <div class="admin-card" style="margin-bottom: 16px;">
+      <h3>Update Status</h3>
+      <%= form_with url: update_status_admin_order_path(@order), method: :patch do |f| %>
+        <div class="form-group">
+          <%= f.select :status, Order.statuses.keys.map { |s| [s.humanize, s] }, { selected: @order.status }, class: "form-select" %>
+        </div>
+        <%= f.submit "Update Status", class: "btn btn--primary" %>
+      <% end %>
+    </div>
+
+    <div class="admin-card">
+      <h3>Order Info</h3>
+      <p><strong>Customer:</strong> <%= @order.user.name %></p>
+      <p><strong>Email:</strong> <%= @order.user.email %></p>
+      <p><strong>Payment:</strong> <%= @order.payment_status.humanize %></p>
+      <p><strong>Method:</strong> <%= @order.payment_method %></p>
+      <% if @order.razorpay_payment_id.present? %>
+        <p><strong>Razorpay ID:</strong> <%= @order.razorpay_payment_id %></p>
+      <% end %>
+      <p><strong>Date:</strong> <%= @order.created_at.strftime("%d %b %Y, %I:%M %p") %></p>
+    </div>
+  </div>
+</div>
+
+<style nonce="<%= content_security_policy_nonce %>">
+  .admin-page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .admin-page-header h1 { font-size: 26px; }
+  .order-detail-grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+  .admin-card { background: white; border-radius: 11px; padding: 24px; box-shadow: 0 1px 3px rgba(38,32,26,.08); margin-bottom: 0; }
+  .admin-card h3 { font-size: 18px; margin-bottom: 16px; }
+  .admin-card p { font-size: 14px; margin-bottom: 8px; }
+  .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .admin-table th { text-align: left; padding: 8px 10px; font-size: 11px; text-transform: uppercase; color: #726365; border-bottom: 1.5px solid #e4e0dd; }
+  .admin-table td { padding: 10px; border-bottom: 1px solid #f0eded; }
+</style>

@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  product: white_cotton_lace
+  image: MyString
+  position: 1
+  alt_text: MyString
+
+two:
+  product: gold_silk_lace
+  image: MyString
+  position: 1
+  alt_text: MyString

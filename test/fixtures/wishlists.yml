@@ -1,0 +1,11 @@
+customer_wishlist_item:
+  user: customer
+  product: gold_silk_lace
+
+customer_wishlist_item_two:
+  user: customer
+  product: floral_embroidered_trim
+
+customer_two_wishlist_item:
+  user: customer_two
+  product: white_cotton_lace

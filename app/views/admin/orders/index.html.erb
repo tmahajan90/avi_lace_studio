@@ -1,0 +1,34 @@
+<div class="admin-page-header"><h1>Orders</h1></div>
+
+<div class="admin-card">
+  <table class="admin-table">
+    <thead>
+      <tr><th>Order #</th><th>Customer</th><th>Total</th><th>Status</th><th>Payment</th><th>Date</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      <% @orders.each do |order| %>
+        <tr>
+          <td><strong><%= order.order_number %></strong></td>
+          <td><%= order.user.name %><br><small><%= order.user.email %></small></td>
+          <td>&#8377;<%= number_with_precision(order.total_amount, precision: 2) %></td>
+          <td><span class="status-badge"><%= order.status.humanize %></span></td>
+          <td><span class="status-badge"><%= order.payment_status.humanize %></span></td>
+          <td><%= order.created_at.strftime("%d %b %Y") %></td>
+          <td><%= link_to "View", admin_order_path(order), class: "link" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <div class="pagination"><%= paginate @orders %></div>
+</div>
+
+<style nonce="<%= content_security_policy_nonce %>">
+  .admin-page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .admin-page-header h1 { font-size: 26px; }
+  .admin-card { background: white; border-radius: 11px; padding: 0 24px 24px; box-shadow: 0 1px 3px rgba(38,32,26,.08); }
+  .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .admin-table th { text-align: left; padding: 14px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #726365; border-bottom: 1.5px solid #e4e0dd; }
+  .admin-table td { padding: 12px 10px; border-bottom: 1px solid #f0eded; }
+  .admin-table small { color: #988487; }
+  .status-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #f0eded; }
+</style>

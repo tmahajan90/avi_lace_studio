@@ -1,0 +1,94 @@
+<% content_for :title, "Lace Finder — Avi Lace Studio" %>
+
+<div class="lace-finder-page">
+  <div class="lace-finder-hero">
+    <h1 class="lace-finder-hero__title">Find Your Perfect Lace</h1>
+    <p class="lace-finder-hero__desc">
+      Upload a photo of your cloth and our AI will recommend matching laces and trims from our collection.
+    </p>
+  </div>
+
+  <div class="lace-finder-card">
+    <% if flash[:alert].present? %>
+      <div class="flash flash--alert"><%= flash[:alert] %></div>
+    <% end %>
+
+    <%= form_with url: lace_finder_path, method: :post,
+                  html: { enctype: "multipart/form-data" },
+                  data: {
+                    controller: "lace-finder",
+                    action: "submit->lace-finder#submitStart turbo:submit-end->lace-finder#submitEnd"
+                  } do |f| %>
+
+      <%# Hidden real file input — visually replaced by the styled label below %>
+      <%= f.file_field :cloth_image,
+                       accept: "image/jpeg,image/png,image/webp,image/gif",
+                       class:  "lace-finder__file-input",
+                       id:     "cloth_image_input",
+                       data: {
+                         "lace-finder-target": "fileInput",
+                         action: "change->lace-finder#previewImage"
+                       } %>
+
+      <label for="cloth_image_input"
+             class="lace-finder__dropzone"
+             data-lace-finder-target="dropzone">
+        <div class="lace-finder__dropzone-icon">
+          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/>
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/>
+          </svg>
+        </div>
+        <p class="lace-finder__dropzone-text" data-lace-finder-target="dropzoneText">
+          Click to upload your cloth photo
+        </p>
+        <p class="lace-finder__dropzone-hint">JPEG, PNG or WebP &middot; Max 5 MB</p>
+      </label>
+
+      <%# Preview shown after file is selected %>
+      <div class="lace-finder__preview" data-lace-finder-target="preview" style="display:none;">
+        <img src="" alt="Cloth preview"
+             class="lace-finder__preview-img"
+             data-lace-finder-target="previewImg">
+        <button type="button"
+                class="btn btn--sm btn--outline"
+                data-action="click->lace-finder#clearImage">
+          Remove photo
+        </button>
+      </div>
+
+      <div class="lace-finder__actions" data-lace-finder-target="actions">
+        <%= f.submit "Find Matching Laces",
+                     class: "btn btn--primary btn--full lace-finder__submit",
+                     disabled: true,
+                     data: { "lace-finder-target": "submitBtn" } %>
+      </div>
+
+      <div class="lace-finder__loading" data-lace-finder-target="loading" style="display:none;">
+        <div class="lace-finder__spinner"></div>
+        <p>Analyzing your cloth with AI&hellip; this takes a few seconds</p>
+      </div>
+
+    <% end %>
+  </div>
+
+  <div class="lace-finder-how">
+    <h2 class="lace-finder-how__title">How it works</h2>
+    <div class="lace-finder-how__steps">
+      <div class="lace-finder-how__step">
+        <span class="lace-finder-how__step-num">1</span>
+        <p>Upload a photo of your cloth or garment</p>
+      </div>
+      <div class="lace-finder-how__step">
+        <span class="lace-finder-how__step-num">2</span>
+        <p>Our AI analyzes the colors, texture and occasion style</p>
+      </div>
+      <div class="lace-finder-how__step">
+        <span class="lace-finder-how__step-num">3</span>
+        <p>We recommend the best matching laces from our collection</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+white_cotton_lace:
+  name: White Cotton Lace 1 inch
+  slug: white-cotton-lace-1-inch
+  description: Classic white cotton lace, 1 inch wide, sold per meter
+  price: 25.00
+  compare_price: 35.00
+  stock_quantity: 100
+  sku: WCL-001
+  category: cotton_laces
+  featured: true
+  status: 1
+
+gold_silk_lace:
+  name: Gold Silk Lace 2 inch
+  slug: gold-silk-lace-2-inch
+  description: Luxurious gold silk lace, 2 inch wide, perfect for sarees
+  price: 85.00
+  compare_price: 120.00
+  stock_quantity: 50
+  sku: GSL-001
+  category: silk_laces
+  featured: true
+  status: 1
+
+floral_embroidered_trim:
+  name: Floral Embroidered Trim
+  slug: floral-embroidered-trim
+  description: Beautiful floral embroidered trim for suits and dupattas
+  price: 45.00
+  compare_price: 60.00
+  stock_quantity: 75
+  sku: FET-001
+  category: embroidered_trims
+  featured: false
+  status: 1
+
+out_of_stock_product:
+  name: Silver Sequin Border
+  slug: silver-sequin-border
+  description: Shimmering silver sequin border for lehengas
+  price: 120.00
+  compare_price: 150.00
+  stock_quantity: 0
+  sku: SSB-001
+  category: sequin_borders
+  featured: false
+  status: 0

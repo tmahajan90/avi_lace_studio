@@ -1,0 +1,99 @@
+<% content_for :title, "Avi Lace Studio — Premium Laces & Trims" %>
+
+<!-- Hero Banner -->
+<section class="hero">
+  <div class="hero__content">
+    <p class="hero__subtitle">Handcrafted Quality</p>
+    <h1 class="hero__title">Premium Laces<br>&amp; Trims</h1>
+    <p class="hero__desc">Wholesale &amp; retail collection of finest laces, borders, and trims from across India.</p>
+    <div class="hero__actions">
+      <%= link_to "Shop Now", products_path, class: "btn btn--primary btn--lg" %>
+      <%= link_to "Browse Categories", products_path, class: "btn btn--outline btn--lg" %>
+    </div>
+  </div>
+  <div class="hero__visual">
+    <div class="hero__pattern"></div>
+  </div>
+</section>
+
+<!-- Category Grid -->
+<% if @categories.any? %>
+<section class="section">
+  <div class="section__header">
+    <h2 class="section__title">Shop by Category</h2>
+  </div>
+  <div class="category-grid">
+    <% @categories.each do |cat| %>
+      <%= link_to category_path(cat.slug), class: "category-card" do %>
+        <div class="category-card__img">
+          <% if cat.image.present? %>
+            <%= image_tag cat.image, alt: cat.name %>
+          <% else %>
+            <div class="category-card__placeholder"><%= cat.name.first(2).upcase %></div>
+          <% end %>
+        </div>
+        <div class="category-card__body">
+          <h3 class="category-card__name"><%= cat.name %></h3>
+          <span class="category-card__count"><%= cat.products.published.count %> products</span>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</section>
+<% end %>
+
+<!-- Featured Products -->
+<% if @featured_products.any? %>
+<section class="section section--tinted">
+  <div class="section__header">
+    <h2 class="section__title">Featured Products</h2>
+    <%= link_to "View All", products_path, class: "section__link" %>
+  </div>
+  <div class="product-grid">
+    <% @featured_products.each do |product| %>
+      <%= render "products/card", product: product %>
+    <% end %>
+  </div>
+</section>
+<% end %>
+
+<!-- USPs -->
+<section class="usp-section">
+  <div class="usp-grid">
+    <div class="usp-card">
+      <div class="usp-card__icon">&#128666;</div>
+      <h4>Pan India Delivery</h4>
+      <p>Fast shipping across all states in India</p>
+    </div>
+    <div class="usp-card">
+      <div class="usp-card__icon">&#10003;</div>
+      <h4>Quality Assured</h4>
+      <p>Every product inspected before dispatch</p>
+    </div>
+    <div class="usp-card">
+      <div class="usp-card__icon">&#128178;</div>
+      <h4>Wholesale Pricing</h4>
+      <p>Best rates for bulk and wholesale orders</p>
+    </div>
+    <div class="usp-card">
+      <div class="usp-card__icon">&#128222;</div>
+      <h4>Dedicated Support</h4>
+      <p>Mon-Sat 10AM-6:30PM customer support</p>
+    </div>
+  </div>
+</section>
+
+<!-- New Arrivals -->
+<% if @new_arrivals.any? %>
+<section class="section">
+  <div class="section__header">
+    <h2 class="section__title">New Arrivals</h2>
+    <%= link_to "View All", products_path(q: { s: "created_at desc" }), class: "section__link" %>
+  </div>
+  <div class="product-grid">
+    <% @new_arrivals.each do |product| %>
+      <%= render "products/card", product: product %>
+    <% end %>
+  </div>
+</section>
+<% end %>

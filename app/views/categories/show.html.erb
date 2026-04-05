@@ -1,0 +1,47 @@
+<% content_for :title, "#{@category.name} — Avi Lace Studio" %>
+
+<div class="page-layout">
+  <aside class="filter-sidebar">
+    <h3 class="filter-sidebar__title">Categories</h3>
+    <% Category.root_categories.each do |cat| %>
+      <%= link_to cat.name, category_path(cat.slug),
+            class: "filter-check #{'filter-check--active' if cat == @category}" %>
+    <% end %>
+  </aside>
+
+  <div class="product-listing">
+    <nav class="breadcrumb">
+      <%= link_to "Home", root_path %> &rsaquo;
+      <%= link_to "Products", products_path %> &rsaquo;
+      <span><%= @category.name %></span>
+    </nav>
+
+    <div class="product-listing__header">
+      <h1 class="product-listing__title"><%= @category.name %></h1>
+      <p class="product-listing__count"><%= @products.total_count %> products</p>
+    </div>
+
+    <% if @category.description.present? %>
+      <p class="category-desc"><%= @category.description %></p>
+    <% end %>
+
+    <% if @products.any? %>
+      <div class="product-grid">
+        <% @products.each do |product| %>
+          <%= render "products/card", product: product %>
+        <% end %>
+      </div>
+      <div class="pagination"><%= paginate @products %></div>
+    <% else %>
+      <div class="empty-state">
+        <p>No products in this category yet.</p>
+        <%= link_to "Browse All Products", products_path, class: "btn btn--primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style nonce="<%= content_security_policy_nonce %>">
+  .filter-check--active { color: var(--color-rose); font-weight: 600; }
+  .category-desc { color: var(--color-text-muted); font-size: 14px; margin-bottom: 24px; }
+</style>

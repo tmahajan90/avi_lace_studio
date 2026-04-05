@@ -1,0 +1,31 @@
+<div class="devise-form-container">
+  <h2>Welcome Back</h2>
+  <p>Sign in to your Avi Lace Studio account.</p>
+
+  <div class="devise-form">
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+      <div class="form-group">
+        <%= f.label :email, "Email Address", class: "form-label" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-input", placeholder: "you@example.com" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password, "Password", class: "form-label" %>
+        <%= f.password_field :password, autocomplete: "current-password", class: "form-input" %>
+      </div>
+
+      <% if devise_mapping.rememberable? %>
+        <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+          <%= f.check_box :remember_me, style: "accent-color: #b1655b;" %>
+          <%= f.label :remember_me, style: "font-size: 14px; cursor: pointer;" %>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= f.submit "Sign In", class: "btn btn--primary btn--full btn--lg" %>
+      </div>
+    <% end %>
+
+    <%= render "devise/shared/links" %>
+  </div>
+</div>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed</title>
+</head>
+<body style="margin:0; padding:0; background:#f3f3ed; font-family:'Work Sans',Arial,sans-serif; color:#3c3131;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f3ed; padding: 40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(38,32,26,.10);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:#26201a; padding: 28px 40px; text-align:center;">
+              <h1 style="margin:0; font-family:Georgia,serif; font-size:24px; color:#f3f3ed; letter-spacing:1px;">Avi Lace Studio</h1>
+              <p style="margin:4px 0 0; font-size:12px; color:rgba(243,243,237,.6); letter-spacing:2px; text-transform:uppercase;">Laces &amp; Trims</p>
+            </td>
+          </tr>
+
+          <!-- Success Banner -->
+          <tr>
+            <td style="background:#b1655b; padding: 20px 40px; text-align:center;">
+              <p style="margin:0; font-size:22px; color:#ffffff; font-weight:600;">&#10003; Order Confirmed!</p>
+              <p style="margin:6px 0 0; font-size:14px; color:rgba(255,255,255,.85);">Thank you, <%= @user.name %>. We've received your order.</p>
+            </td>
+          </tr>
+
+          <!-- Order Info -->
+          <tr>
+            <td style="padding: 32px 40px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background:#f8f8f8; border-radius:8px; padding:16px 20px;">
+                    <table width="100%">
+                      <tr>
+                        <td style="font-size:13px; color:#726365;">Order Number</td>
+                        <td style="font-size:13px; color:#726365;">Date</td>
+                        <td style="font-size:13px; color:#726365;">Payment</td>
+                        <td style="font-size:13px; color:#726365;">Status</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:15px; font-weight:700; color:#26201a; padding-top:6px;"><%= @order.order_number %></td>
+                        <td style="font-size:15px; font-weight:600; color:#26201a; padding-top:6px;"><%= @order.created_at.strftime("%d %b %Y") %></td>
+                        <td style="font-size:15px; font-weight:600; color:#26201a; padding-top:6px;"><%= @order.payment_method == 'cod' ? 'Cash on Delivery' : 'Online (Razorpay)' %></td>
+                        <td style="padding-top:6px;">
+                          <span style="background:<%= @order.payment_status == 'paid' ? '#d4edda' : '#fef3cd' %>; color:<%= @order.payment_status == 'paid' ? '#155724' : '#856404' %>; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600;">
+                            <%= @order.payment_status == 'paid' ? 'Paid' : 'Pending' %>
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Items -->
+          <tr>
+            <td style="padding: 28px 40px 0;">
+              <h3 style="margin:0 0 16px; font-size:17px; font-family:Georgia,serif; color:#26201a;">Order Items</h3>
+              <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                <tr style="border-bottom:1.5px solid #e4e0dd;">
+                  <td style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#726365; padding-bottom:8px;">Product</td>
+                  <td style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#726365; padding-bottom:8px; text-align:center;">Qty</td>
+                  <td style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#726365; padding-bottom:8px; text-align:right;">Price</td>
+                </tr>
+                <% @items.each do |item| %>
+                  <tr style="border-bottom:1px solid #f0eded;">
+                    <td style="padding:12px 0; font-size:14px; color:#3c3131;"><%= item.product_name %></td>
+                    <td style="padding:12px 0; font-size:14px; color:#726365; text-align:center;">&times;<%= item.quantity %></td>
+                    <td style="padding:12px 0; font-size:14px; font-weight:600; color:#26201a; text-align:right;">&#8377;<%= number_with_precision(item.total_price, precision: 2) %></td>
+                  </tr>
+                <% end %>
+                <tr>
+                  <td colspan="2" style="padding:14px 0 0; font-size:16px; font-weight:700; color:#26201a;">Total</td>
+                  <td style="padding:14px 0 0; font-size:18px; font-weight:700; color:#b1655b; text-align:right;">&#8377;<%= number_with_precision(@order.total_amount, precision: 2) %></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Delivery Address -->
+          <% if @order.shipping_address.present? %>
+          <% addr = @order.shipping_address %>
+          <tr>
+            <td style="padding: 28px 40px 0;">
+              <h3 style="margin:0 0 12px; font-size:17px; font-family:Georgia,serif; color:#26201a;">Delivery Address</h3>
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8; border-radius:8px; border-left:4px solid #b1655b; overflow:hidden;">
+                <tr>
+                  <td style="padding:18px 20px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="24" valign="top" style="padding-top:2px;">
+                          <span style="font-size:16px;">&#128205;</span>
+                        </td>
+                        <td style="padding-left:10px;">
+                          <p style="margin:0 0 4px; font-size:14px; font-weight:700; color:#26201a;"><%= addr.full_name %></p>
+                          <p style="margin:0; font-size:13px; color:#3c3131; line-height:1.7;">
+                            <%= addr.address_line1 %><%= ", #{addr.address_line2}" if addr.address_line2.present? %><br>
+                            <%= addr.city %>, <%= addr.state %> &mdash; <%= addr.pincode %><br>
+                            <span style="color:#726365;">&#128222; <%= addr.phone %></span>
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <% end %>
+
+          <!-- CTA -->
+          <tr>
+            <td style="padding: 32px 40px; text-align:center;">
+              <%= link_to "View My Order", account_order_url(@order), style: "display:inline-block; background:#b1655b; color:#ffffff; text-decoration:none; padding:13px 32px; border-radius:11px; font-size:15px; font-weight:600;" %>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f8f8f8; padding:20px 40px; text-align:center; border-top:1px solid #e4e0dd;">
+              <p style="margin:0; font-size:12px; color:#988487;">Questions? Reply to this email or WhatsApp us.</p>
+              <p style="margin:6px 0 0; font-size:12px; color:#988487;">&copy; <%= Date.current.year %> Avi Lace Studio, Mumbai</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

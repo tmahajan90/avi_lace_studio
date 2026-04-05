@@ -1,0 +1,11 @@
+customer_cart_item_one:
+  cart: customer_cart
+  product: white_cotton_lace
+  quantity: 2
+  price: 25.00
+
+customer_cart_item_two:
+  cart: customer_cart
+  product: gold_silk_lace
+  quantity: 1
+  price: 85.00

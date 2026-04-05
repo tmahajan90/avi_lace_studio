@@ -1,0 +1,103 @@
+<% content_for :title, "#{@product.name} — Avi Lace Studio" %>
+
+<div class="product-detail">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <%= link_to "Home", root_path %> &rsaquo;
+    <%= link_to "Products", products_path %> &rsaquo;
+    <%= link_to @product.category.name, category_path(@product.category.slug) %> &rsaquo;
+    <span><%= @product.name %></span>
+  </nav>
+
+  <div class="product-detail__layout">
+    <!-- Image Gallery -->
+    <div class="product-gallery">
+      <div class="product-gallery__main" id="main-image">
+        <% if @product.main_image.attached? %>
+          <%= image_tag @product.main_image, alt: @product.name, class: "product-gallery__img", id: "primary-image" %>
+        <% elsif @product.product_images.any? %>
+          <%= image_tag @product.product_images.first.image, alt: @product.name, class: "product-gallery__img", id: "primary-image" %>
+        <% else %>
+          <div class="product-gallery__placeholder"><%= @product.name.first(4).upcase %></div>
+        <% end %>
+      </div>
+      <% if @product.product_images.count > 1 %>
+        <div class="product-gallery__thumbs">
+          <% @product.product_images.each do |img| %>
+            <%= image_tag img.image, alt: "#{@product.name} thumbnail", class: "product-gallery__thumb", data: { action: "click->gallery#switchImage", src: url_for(img.image) } %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-info">
+      <p class="product-info__category">
+        <%= link_to @product.category.name, category_path(@product.category.slug) %>
+      </p>
+      <h1 class="product-info__name"><%= @product.name %></h1>
+      <% if @product.sku.present? %>
+        <p class="product-info__sku">SKU: <%= @product.sku %></p>
+      <% end %>
+
+      <div class="product-info__price">
+        <span class="product-info__price--current">&#8377;<%= number_with_precision(@product.price, precision: 2) %></span>
+        <% if @product.discounted? %>
+          <span class="product-info__price--original">&#8377;<%= number_with_precision(@product.compare_price, precision: 2) %></span>
+          <span class="product-info__discount"><%= @product.discount_percentage %>% off</span>
+        <% end %>
+      </div>
+
+      <div class="product-info__stock">
+        <% if @product.in_stock? %>
+          <span class="stock-badge stock-badge--in">In Stock (<%= @product.stock_quantity %> available)</span>
+        <% else %>
+          <span class="stock-badge stock-badge--out">Out of Stock</span>
+        <% end %>
+      </div>
+
+      <% if @product.in_stock? %>
+        <%= form_with url: cart_cart_items_path, method: :post, class: "add-to-cart-form" do |f| %>
+          <%= f.hidden_field :product_id, value: @product.id %>
+          <div class="quantity-selector">
+            <label>Quantity:</label>
+            <div class="quantity-selector__controls">
+              <button type="button" class="quantity-selector__btn" data-action="decrease">-</button>
+              <%= f.number_field :quantity, value: 1, min: 1, max: @product.stock_quantity, class: "quantity-selector__input", id: "quantity-input" %>
+              <button type="button" class="quantity-selector__btn" data-action="increase">+</button>
+            </div>
+          </div>
+          <div class="product-info__cta">
+            <button type="submit" class="btn btn--primary btn--lg">Add to Cart</button>
+            <% if user_signed_in? %>
+              <%= button_to account_wishlists_path, method: :post, params: { product_id: @product.id }, class: "btn btn--outline btn--icon", form_class: "inline-form" do %>
+                &#9825; Wishlist
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+
+      <% if @product.description.present? %>
+        <div class="product-info__desc">
+          <h3>Product Description</h3>
+          <p><%= simple_format @product.description %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  <% if @related_products.any? %>
+  <section class="section">
+    <div class="section__header">
+      <h2 class="section__title">Related Products</h2>
+    </div>
+    <div class="product-grid">
+      <% @related_products.each do |product| %>
+        <%= render "products/card", product: product %>
+      <% end %>
+    </div>
+  </section>
+  <% end %>
+</div>

@@ -1,0 +1,42 @@
+<div class="admin-page-header">
+  <h1>Edit Customer</h1>
+  <%= link_to "Back", admin_user_path(@user), class: "btn btn--outline" %>
+</div>
+
+<div class="admin-card" style="max-width:540px;">
+  <%= form_with model: [:admin, @user] do |f| %>
+    <% if @user.errors.any? %>
+      <div class="flash flash--alert">
+        <% @user.errors.full_messages.each do |msg| %>
+          <p><%= msg %></p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="form-group">
+      <%= f.label :name, "Name", class: "form-label" %>
+      <%= f.text_field :name, class: "form-input", required: true %>
+    </div>
+    <div class="form-group">
+      <%= f.label :phone, "Phone", class: "form-label" %>
+      <%= f.text_field :phone, class: "form-input" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :role, "Role", class: "form-label" %>
+      <%= f.select :role, User.roles.keys.map { |r| [r.humanize, r] }, {}, class: "form-select" %>
+    </div>
+
+    <div class="form-actions">
+      <%= f.submit "Save Changes", class: "btn btn--primary" %>
+      <%= link_to "Cancel", admin_user_path(@user), class: "btn btn--outline" %>
+    </div>
+  <% end %>
+</div>
+
+<style nonce="<%= content_security_policy_nonce %>">
+  .admin-page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .admin-page-header h1 { font-size:26px; }
+  .admin-card { background:white; border-radius:11px; padding:28px; box-shadow:0 1px 3px rgba(38,32,26,.08); }
+  .form-group { margin-bottom:16px; }
+  .form-actions { display:flex; gap:12px; margin-top:24px; }
+</style>

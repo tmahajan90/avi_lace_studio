@@ -1,0 +1,16 @@
+<h2>My Wishlist</h2>
+<% if @wishlist_items.any? %>
+  <div class="product-grid">
+    <% @wishlist_items.each do |item| %>
+      <%= render "products/card", product: item.product %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <p>Your wishlist is empty.</p>
+    <%= link_to "Browse Products", products_path, class: "btn btn--primary" %>
+  </div>
+<% end %>
+<style nonce="<%= content_security_policy_nonce %>">
+  h2 { font-size: 26px; margin-bottom: 24px; }
+</style>

@@ -1,0 +1,78 @@
+<% content_for :title, "Your Lace Recommendations — Avi Lace Studio" %>
+
+<div class="lace-finder-page">
+
+  <div class="lace-finder-hero">
+    <h1 class="lace-finder-hero__title">Your Lace Recommendations</h1>
+    <% if @match_summary.present? %>
+      <p class="lace-finder-hero__desc"><%= @match_summary %></p>
+    <% end %>
+  </div>
+
+  <%# AI Analysis summary card %>
+  <div class="lace-analysis-card">
+    <% if @analysis[:dominant_colors].any? %>
+      <div class="lace-analysis-card__section">
+        <span class="lace-analysis-card__label">Colors Detected</span>
+        <div class="lace-analysis-card__tags">
+          <% @analysis[:dominant_colors].each do |color| %>
+            <span class="lace-tag"><%= color.capitalize %></span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @analysis[:texture_style].present? %>
+      <div class="lace-analysis-card__section">
+        <span class="lace-analysis-card__label">Fabric Style</span>
+        <span class="lace-analysis-card__value"><%= @analysis[:texture_style] %></span>
+      </div>
+    <% end %>
+
+    <% if @analysis[:occasion_tags].any? %>
+      <div class="lace-analysis-card__section">
+        <span class="lace-analysis-card__label">Occasion</span>
+        <div class="lace-analysis-card__tags">
+          <% @analysis[:occasion_tags].each do |tag| %>
+            <span class="lace-tag lace-tag--accent"><%= tag.capitalize %></span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @analysis[:recommended_lace_types].any? %>
+      <div class="lace-analysis-card__section">
+        <span class="lace-analysis-card__label">Recommended Types</span>
+        <div class="lace-analysis-card__tags">
+          <% @analysis[:recommended_lace_types].each do |type| %>
+            <span class="lace-tag lace-tag--category"><%= type %></span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <%# Results header %>
+  <div class="lace-finder-results-header">
+    <h2 class="lace-finder-results-header__title">
+      <%= @products.size %> Matching Product<%= @products.size == 1 ? "" : "s" %> Found
+    </h2>
+    <%= link_to "Try Another Photo", lace_finder_path, class: "btn btn--outline btn--sm" %>
+  </div>
+
+  <% if @products.any? %>
+    <div class="product-grid">
+      <% @products.each do |product| %>
+        <%= render "products/card", product: product %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-state__icon">🪡</div>
+      <h2>No exact matches found</h2>
+      <p>Try uploading a different photo or browse our full collection.</p>
+      <%= link_to "Browse All Products", products_path, class: "btn btn--primary" %>
+    </div>
+  <% end %>
+
+</div>

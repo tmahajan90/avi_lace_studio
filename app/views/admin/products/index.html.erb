@@ -1,0 +1,47 @@
+<div class="admin-page-header">
+  <h1>Products</h1>
+  <%= link_to "Add Product", new_admin_product_path, class: "btn btn--primary" %>
+</div>
+
+<%= search_form_for @q, url: admin_products_path, html: { class: "admin-search-form" } do |f| %>
+  <%= f.search_field :name_cont, placeholder: "Search products...", class: "form-input" %>
+  <button class="btn btn--outline">Search</button>
+<% end %>
+
+<div class="admin-card">
+  <table class="admin-table">
+    <thead>
+      <tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      <% @products.each do |product| %>
+        <tr>
+          <td><strong><%= product.name %></strong><br><small><%= product.sku %></small></td>
+          <td><%= product.category.name %></td>
+          <td>&#8377;<%= number_with_precision(product.price, precision: 2) %></td>
+          <td class="<%= product.stock_quantity <= 5 ? 'text-danger' : '' %>"><%= product.stock_quantity %></td>
+          <td><span class="status-badge"><%= product.status.humanize %></span></td>
+          <td>
+            <%= link_to "Edit", edit_admin_product_path(product), class: "link" %> |
+            <%= button_to "Delete", admin_product_path(product), method: :delete, data: { turbo_confirm: "Delete this product?" }, class: "btn-link text-danger" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <div class="pagination"><%= paginate @products %></div>
+</div>
+
+<style nonce="<%= content_security_policy_nonce %>">
+  .admin-page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .admin-page-header h1 { font-size: 26px; }
+  .admin-search-form { display: flex; gap: 10px; margin-bottom: 20px; max-width: 400px; }
+  .admin-card { background: white; border-radius: 11px; padding: 0 24px 24px; box-shadow: 0 1px 3px rgba(38,32,26,.08); }
+  .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .admin-table th { text-align: left; padding: 14px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #726365; border-bottom: 1.5px solid #e4e0dd; }
+  .admin-table td { padding: 12px 10px; border-bottom: 1px solid #f0eded; }
+  .admin-table small { color: #988487; }
+  .status-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #f0eded; }
+  .btn-link { background: none; border: none; cursor: pointer; padding: 0; font-size: 13px; }
+  .text-danger { color: #c0392b; }
+</style>

@@ -1,0 +1,57 @@
+<div class="admin-page-header">
+  <h1>Edit Product</h1>
+</div>
+<%= render "form", product: @product %>
+
+<div class="admin-card" style="margin-top: 24px;">
+  <h3>Product Images</h3>
+
+  <% if @product.product_images.any? %>
+    <div class="image-grid">
+      <% @product.product_images.each do |img| %>
+        <div class="image-thumb">
+          <% if img.image.attached? %>
+            <%= image_tag img.image, style: "width:100%; height:100px; object-fit:cover; border-radius:6px;" %>
+          <% else %>
+            <div style="width:100%; height:100px; background:#f0eded; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#988487; font-size:12px;">No image</div>
+          <% end %>
+          <p style="font-size:12px; color:#726365; margin:4px 0 6px;"><%= img.alt_text.presence || "Image #{img.position}" %></p>
+          <%= button_to "Remove", admin_product_product_image_path(@product, img),
+                method: :delete,
+                class: "btn btn--sm",
+                style: "background:#f0eded; color:#b1655b; font-size:11px; padding:3px 10px;",
+                data: { turbo_confirm: "Remove this image?" } %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p style="font-size:13px; color:#988487; margin-bottom:16px;">No additional images yet.</p>
+  <% end %>
+
+  <hr style="border-color:#f0eded; margin:20px 0;">
+  <h4 style="font-size:14px; margin-bottom:12px;">Add Image</h4>
+  <%= form_with url: admin_product_product_images_path(@product), multipart: true do |f| %>
+    <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+      <div class="form-group" style="flex:1; min-width:200px;">
+        <%= label_tag :image, "Image File", class: "form-label" %>
+        <%= f.file_field :image, name: "product_image[image]", class: "form-input", accept: "image/*", required: true %>
+      </div>
+      <div class="form-group" style="width:120px;">
+        <%= label_tag :position, "Position", class: "form-label" %>
+        <%= f.number_field :position, name: "product_image[position]", class: "form-input", min: 0, value: @product.product_images.count %>
+      </div>
+      <div class="form-group" style="flex:1; min-width:160px;">
+        <%= label_tag :alt_text, "Alt Text", class: "form-label" %>
+        <%= f.text_field :alt_text, name: "product_image[alt_text]", class: "form-input" %>
+      </div>
+      <div class="form-group">
+        <%= f.submit "Upload", class: "btn btn--primary" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<style nonce="<%= content_security_policy_nonce %>">
+  .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 8px; }
+  .image-thumb { background: #f8f8f8; border-radius: 8px; padding: 10px; text-align: center; }
+</style>

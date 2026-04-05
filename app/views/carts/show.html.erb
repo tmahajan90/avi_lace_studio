@@ -1,0 +1,73 @@
+<% content_for :title, "Shopping Cart — Avi Lace Studio" %>
+
+<div class="cart-page">
+  <h1 class="page-title">Shopping Cart</h1>
+
+  <% if @cart_items.any? %>
+    <div class="cart-layout">
+      <div class="cart-items">
+        <% @cart_items.each do |item| %>
+          <div class="cart-item">
+            <div class="cart-item__image">
+              <% if item.product.main_image.attached? %>
+                <%= image_tag item.product.main_image, alt: item.product.name, class: "cart-item__img" %>
+              <% else %>
+                <div class="cart-item__placeholder"><%= item.product.name.first(2).upcase %></div>
+              <% end %>
+            </div>
+            <div class="cart-item__details">
+              <h3><%= link_to item.product.name, product_path(item.product.slug) %></h3>
+              <p class="cart-item__price">&#8377;<%= number_with_precision(item.price, precision: 2) %> each</p>
+            </div>
+            <div class="cart-item__quantity">
+              <%= form_with url: cart_cart_item_path(item), method: :patch, class: "quantity-form" do |f| %>
+                <%= f.number_field "cart_item[quantity]", value: item.quantity, min: 0, max: item.product.stock_quantity, class: "quantity-input", data: { autosubmit: true } %>
+              <% end %>
+            </div>
+            <div class="cart-item__subtotal">
+              &#8377;<%= number_with_precision(item.subtotal, precision: 2) %>
+            </div>
+            <div class="cart-item__remove">
+              <%= button_to cart_cart_item_path(item), method: :delete, class: "btn-icon btn-icon--danger", form: { data: { turbo_confirm: "Remove this item?" } } do %>
+                &times;
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="cart-summary">
+        <h3>Order Summary</h3>
+        <div class="cart-summary__row">
+          <span>Subtotal (<%= @cart.item_count %> items)</span>
+          <span>&#8377;<%= number_with_precision(@cart.total, precision: 2) %></span>
+        </div>
+        <div class="cart-summary__row">
+          <span>Shipping</span>
+          <span>Calculated at checkout</span>
+        </div>
+        <div class="cart-summary__total">
+          <span>Total</span>
+          <span>&#8377;<%= number_with_precision(@cart.total, precision: 2) %></span>
+        </div>
+        <% if user_signed_in? %>
+          <%= link_to checkout_orders_path, class: "btn btn--primary btn--full btn--lg" do %>
+            Proceed to Checkout
+          <% end %>
+        <% else %>
+          <%= link_to new_user_session_path, class: "btn btn--primary btn--full btn--lg" do %>
+            Login to Checkout
+          <% end %>
+        <% end %>
+        <%= link_to "Continue Shopping", products_path, class: "btn btn--outline btn--full" %>
+      </div>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-state__icon">&#128722;</div>
+      <h2>Your cart is empty</h2>
+      <p>Browse our collection and add products to your cart.</p>
+      <%= link_to "Start Shopping", products_path, class: "btn btn--primary btn--lg" %>
+    </div>
+  <% end %>
+</div>

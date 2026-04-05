@@ -1,0 +1,40 @@
+<article class="product-card">
+  <%= link_to product_path(product.slug), class: "product-card__link" do %>
+    <div class="product-card__image">
+      <% if product.main_image.attached? %>
+        <%= image_tag product.main_image, alt: product.name, class: "product-card__img" %>
+      <% elsif product.product_images.any? %>
+        <%= image_tag product.product_images.first.image, alt: product.name, class: "product-card__img" %>
+      <% else %>
+        <div class="product-card__placeholder">
+          <span><%= product.name.first(3).upcase %></span>
+        </div>
+      <% end %>
+      <% if product.discounted? %>
+        <span class="product-card__badge product-card__badge--sale">-<%= product.discount_percentage %>%</span>
+      <% end %>
+      <% unless product.in_stock? %>
+        <span class="product-card__badge product-card__badge--oos">Out of Stock</span>
+      <% end %>
+    </div>
+    <div class="product-card__body">
+      <p class="product-card__category"><%= product.category.name %></p>
+      <h3 class="product-card__name"><%= product.name %></h3>
+      <div class="product-card__price">
+        <span class="product-card__price--current">&#8377;<%= number_with_precision(product.price, precision: 2) %></span>
+        <% if product.discounted? %>
+          <span class="product-card__price--original">&#8377;<%= number_with_precision(product.compare_price, precision: 2) %></span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  <div class="product-card__actions">
+    <% if product.in_stock? %>
+      <%= button_to cart_cart_items_path, method: :post, params: { product_id: product.id, quantity: 1 }, class: "btn btn--primary btn--full" do %>
+        Add to Cart
+      <% end %>
+    <% else %>
+      <button class="btn btn--disabled btn--full" disabled>Out of Stock</button>
+    <% end %>
+  </div>
+</article>

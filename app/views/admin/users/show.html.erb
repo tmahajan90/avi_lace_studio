@@ -1,0 +1,61 @@
+<div class="admin-page-header">
+  <h1><%= @user.name %></h1>
+  <div style="display:flex; gap:10px;">
+    <%= link_to "Edit User", edit_admin_user_path(@user), class: "btn btn--outline" %>
+    <%= link_to "Back to Customers", admin_users_path, class: "btn btn--outline" %>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+  <div class="admin-card">
+    <h3>Customer Info</h3>
+    <p><strong>Name:</strong> <%= @user.name %></p>
+    <p><strong>Email:</strong> <%= @user.email %></p>
+    <p><strong>Phone:</strong> <%= @user.phone.presence || "—" %></p>
+    <p><strong>Role:</strong> <%= @user.role.humanize %></p>
+    <p><strong>Joined:</strong> <%= @user.created_at.strftime("%d %b %Y") %></p>
+  </div>
+
+  <div class="admin-card">
+    <h3>Order Summary</h3>
+    <p><strong>Total Orders:</strong> <%= @orders.count %></p>
+    <p><strong>Total Spent:</strong> &#8377;<%= number_with_precision(@orders.sum(:total_amount), precision: 2) %></p>
+  </div>
+</div>
+
+<div class="admin-card" style="margin-top:24px;">
+  <h3>Orders</h3>
+  <% if @orders.any? %>
+    <table class="admin-table">
+      <thead>
+        <tr><th>Order #</th><th>Date</th><th>Status</th><th>Payment</th><th>Total</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% @orders.each do |order| %>
+          <tr>
+            <td><strong><%= order.order_number %></strong></td>
+            <td><%= order.created_at.strftime("%d %b %Y") %></td>
+            <td><span class="status-badge"><%= order.status.humanize %></span></td>
+            <td><span class="status-badge"><%= order.payment_status.humanize %></span></td>
+            <td>&#8377;<%= number_with_precision(order.total_amount, precision: 2) %></td>
+            <td><%= link_to "View", admin_order_path(order), class: "btn btn--sm btn--outline" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p style="font-size:13px; color:#988487;">No orders yet.</p>
+  <% end %>
+</div>
+
+<style nonce="<%= content_security_policy_nonce %>">
+  .admin-page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .admin-page-header h1 { font-size:26px; }
+  .admin-card { background:white; border-radius:11px; padding:24px; box-shadow:0 1px 3px rgba(38,32,26,.08); }
+  .admin-card h3 { font-size:18px; margin-bottom:16px; }
+  .admin-card p { font-size:14px; margin-bottom:8px; }
+  .admin-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .admin-table th { text-align:left; padding:8px 10px; font-size:11px; text-transform:uppercase; color:#726365; border-bottom:1.5px solid #e4e0dd; }
+  .admin-table td { padding:10px; border-bottom:1px solid #f0eded; }
+  .status-badge { display:inline-block; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:600; background:#f0eded; }
+</style>

@@ -1,0 +1,27 @@
+paid_order:
+  user: customer
+  order_number: ALS-20260405-0001
+  status: 1
+  total_amount: 135.00
+  subtotal: 135.00
+  shipping_amount: 0.00
+  payment_status: 1
+  payment_method: razorpay
+  razorpay_order_id: order_test_001
+  razorpay_payment_id: pay_test_001
+  notes: ""
+  shipping_address_id: <%= ActiveRecord::FixtureSet.identify(:customer_home) %>
+
+cod_order:
+  user: customer_two
+  order_number: ALS-20260405-0002
+  status: 0
+  total_amount: 45.00
+  subtotal: 45.00
+  shipping_amount: 0.00
+  payment_status: 0
+  payment_method: cod
+  razorpay_order_id: ""
+  razorpay_payment_id: ""
+  notes: Please deliver in the morning
+  shipping_address_id: <%= ActiveRecord::FixtureSet.identify(:customer_two_home) %>

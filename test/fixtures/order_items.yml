@@ -1,0 +1,23 @@
+paid_order_item_one:
+  order: paid_order
+  product: white_cotton_lace
+  quantity: 2
+  unit_price: 25.00
+  total_price: 50.00
+  product_name: White Cotton Lace 1 inch
+
+paid_order_item_two:
+  order: paid_order
+  product: gold_silk_lace
+  quantity: 1
+  unit_price: 85.00
+  total_price: 85.00
+  product_name: Gold Silk Lace 2 inch
+
+cod_order_item_one:
+  order: cod_order
+  product: floral_embroidered_trim
+  quantity: 1
+  unit_price: 45.00
+  total_price: 45.00
+  product_name: Floral Embroidered Trim
