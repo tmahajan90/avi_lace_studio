@@ -4,7 +4,7 @@ customer_wishlist_item:
 
 customer_wishlist_item_two:
   user: customer
-  product: floral_embroidered_trim
+  product: beaded_lace_product
 
 customer_two_wishlist_item:
   user: customer_two

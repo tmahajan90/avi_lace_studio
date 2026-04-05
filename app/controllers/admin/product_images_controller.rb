@@ -28,7 +28,7 @@ module Admin
     end
 
     def image_params
-      params.require(:product_image).permit(:image, :position, :alt_text)
+      params.require(:product_image).permit(:image, :position, :alt_text, :cloudinary_url)
     end
   end
 end

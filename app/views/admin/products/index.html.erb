@@ -3,10 +3,56 @@
   <%= link_to "Add Product", new_admin_product_path, class: "btn btn--primary" %>
 </div>
 
-<%= search_form_for @q, url: admin_products_path, html: { class: "admin-search-form" } do |f| %>
-  <%= f.search_field :name_cont, placeholder: "Search products...", class: "form-input" %>
-  <button class="btn btn--outline">Search</button>
-<% end %>
+<div class="admin-filters">
+  <%= form_with url: admin_products_path, method: :get, html: { class: "admin-filters__form" } do |f| %>
+    <%= f.search_field :q, value: params[:q]&.dig(:name_cont),
+          name: "q[name_cont]",
+          placeholder: "Search products...",
+          class: "form-input" %>
+
+    <select name="category_id" class="form-select admin-cat-select">
+      <option value="">All Categories</option>
+      <% Category.root_categories.includes(:subcategories).each do |parent| %>
+        <optgroup label="<%= parent.name %>">
+          <option value="<%= parent.id %>" <%= 'selected' if params[:category_id] == parent.id.to_s %>>
+            All <%= parent.name %>
+          </option>
+          <% parent.subcategories.each do |sub| %>
+            <option value="<%= sub.id %>" <%= 'selected' if params[:category_id] == sub.id.to_s %>>
+              <%= sub.name %>
+            </option>
+          <% end %>
+        </optgroup>
+      <% end %>
+    </select>
+
+    <select name="status" class="form-select">
+      <option value="">All Statuses</option>
+      <option value="active"   <%= 'selected' if params[:status] == 'active'   %>>Active</option>
+      <option value="draft"    <%= 'selected' if params[:status] == 'draft'    %>>Draft</option>
+      <option value="archived" <%= 'selected' if params[:status] == 'archived' %>>Archived</option>
+    </select>
+
+    <select name="sort" class="form-select">
+      <option value="">Sort By</option>
+      <option value="name_asc"    <%= 'selected' if params[:sort] == 'name_asc'    %>>Name A→Z</option>
+      <option value="name_desc"   <%= 'selected' if params[:sort] == 'name_desc'   %>>Name Z→A</option>
+      <option value="price_asc"   <%= 'selected' if params[:sort] == 'price_asc'   %>>Price Low→High</option>
+      <option value="price_desc"  <%= 'selected' if params[:sort] == 'price_desc'  %>>Price High→Low</option>
+      <option value="stock_asc"   <%= 'selected' if params[:sort] == 'stock_asc'   %>>Stock Low→High</option>
+      <option value="stock_desc"  <%= 'selected' if params[:sort] == 'stock_desc'  %>>Stock High→Low</option>
+      <option value="category"    <%= 'selected' if params[:sort] == 'category'    %>>Category</option>
+      <option value="newest"      <%= 'selected' if params[:sort] == 'newest'      %>>Newest First</option>
+      <option value="oldest"      <%= 'selected' if params[:sort] == 'oldest'      %>>Oldest First</option>
+    </select>
+
+    <button class="btn btn--outline">Filter</button>
+
+    <% if params[:category_id].present? || params[:status].present? || params[:sort].present? || params.dig(:q, :name_cont).present? %>
+      <%= link_to "Clear", admin_products_path, class: "btn btn--sm", style: "color: #726365;" %>
+    <% end %>
+  <% end %>
+</div>
 
 <div class="admin-card">
   <table class="admin-table">
@@ -19,8 +65,15 @@
           <td><strong><%= product.name %></strong><br><small><%= product.sku %></small></td>
           <td><%= product.category.name %></td>
           <td>&#8377;<%= number_with_precision(product.price, precision: 2) %></td>
-          <td class="<%= product.stock_quantity <= 5 ? 'text-danger' : '' %>"><%= product.stock_quantity %></td>
-          <td><span class="status-badge"><%= product.status.humanize %></span></td>
+          <td>
+            <span class="stock-edit <%= product.stock_quantity <= 5 ? 'text-danger' : '' %>"
+                  data-product-id="<%= product.id %>"
+                  data-url="<%= update_stock_admin_product_path(product) %>"
+                  title="Click to edit stock">
+              <%= product.stock_quantity %>
+            </span>
+          </td>
+          <td><span class="status-badge status-badge--<%= product.status %>"><%= product.status.humanize %></span></td>
           <td>
             <%= link_to "Edit", edit_admin_product_path(product), class: "link" %> |
             <%= button_to "Delete", admin_product_path(product), method: :delete, data: { turbo_confirm: "Delete this product?" }, class: "btn-link text-danger" %>
@@ -32,6 +85,59 @@
   <div class="pagination"><%= paginate @products %></div>
 </div>
 
+<script nonce="<%= content_security_policy_nonce %>">
+  document.addEventListener("turbo:load", function() {
+    document.querySelectorAll(".stock-edit").forEach(function(span) {
+      span.addEventListener("click", function() {
+        if (span.querySelector("input")) return; // already editing
+
+        var current = span.textContent.trim();
+        var url     = span.dataset.url;
+
+        var input = document.createElement("input");
+        input.type  = "number";
+        input.value = current;
+        input.min   = "0";
+        input.className = "stock-input";
+
+        span.textContent = "";
+        span.appendChild(input);
+        input.focus();
+        input.select();
+
+        function save() {
+          var qty = parseInt(input.value);
+          if (isNaN(qty) || qty < 0) { cancel(); return; }
+          if (qty == parseInt(current)) { cancel(); return; }
+
+          fetch(url, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ stock_quantity: qty })
+          })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            span.textContent = data.stock_quantity;
+            span.classList.toggle("text-danger", data.stock_quantity <= 5);
+          })
+          .catch(function() { span.textContent = current; });
+        }
+
+        function cancel() { span.textContent = current; }
+
+        input.addEventListener("keydown", function(e) {
+          if (e.key === "Enter")  { save(); }
+          if (e.key === "Escape") { cancel(); }
+        });
+        input.addEventListener("blur", save);
+      });
+    });
+  });
+</script>
+
 <style nonce="<%= content_security_policy_nonce %>">
   .admin-page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
   .admin-page-header h1 { font-size: 26px; }
@@ -41,7 +147,20 @@
   .admin-table th { text-align: left; padding: 14px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #726365; border-bottom: 1.5px solid #e4e0dd; }
   .admin-table td { padding: 12px 10px; border-bottom: 1px solid #f0eded; }
   .admin-table small { color: #988487; }
-  .status-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #f0eded; }
+  .status-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #f0eded; color: #726365; }
+  .status-badge--active   { background: #d4edda; color: #155724; }
+  .status-badge--draft    { background: #fff3cd; color: #856404; }
+  .status-badge--archived { background: #f0eded; color: #726365; }
+  .admin-filters { margin-bottom: 20px; }
+  .admin-filters__form { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .admin-filters__form .form-input { max-width: 220px; }
+  .admin-filters__form .form-select { max-width: 180px; }
+  .admin-cat-select { max-width: 220px; min-width: 180px; }
+  .admin-cat-select optgroup { font-weight: 700; font-size: 13px; color: #26201a; background: #f3f3ed; }
+  .admin-cat-select optgroup option { font-weight: 400; font-size: 13px; color: #3c3131; background: #fff; padding-left: 8px; }
   .btn-link { background: none; border: none; cursor: pointer; padding: 0; font-size: 13px; }
   .text-danger { color: #c0392b; }
+  .stock-edit { cursor: pointer; border-bottom: 1.5px dashed #b1655b; padding-bottom: 1px; }
+  .stock-edit:hover { color: #b1655b; }
+  .stock-input { width: 60px; padding: 2px 6px; font-size: 13px; border: 1.5px solid #b1655b; border-radius: 4px; text-align: center; outline: none; }
 </style>

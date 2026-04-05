@@ -19,7 +19,7 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   test "invalid with duplicate slug" do
-    cat = Category.new(name: "Cotton Laces", slug: categories(:cotton_laces).slug)
+    cat = Category.new(name: "Cotton Laces Dup", slug: categories(:cotton_laces).slug)
     assert_not cat.valid?
     assert_includes cat.errors[:slug], "has already been taken"
   end
@@ -28,8 +28,49 @@ class CategoryTest < ActiveSupport::TestCase
     assert_respond_to categories(:cotton_laces), :products
   end
 
-  test "root_categories scope excludes subcategories" do
+  test "root_categories scope returns only root categories" do
     root_cats = Category.root_categories
+    assert root_cats.any?
     assert root_cats.all? { |c| c.parent_id.nil? }
+  end
+
+  test "root_categories does not include subcategories" do
+    root_cat_slugs = Category.root_categories.map(&:slug)
+    assert_not_includes root_cat_slugs, "cotton-laces"
+    assert_not_includes root_cat_slugs, "silk-laces"
+  end
+
+  test "root categories include top-level categories" do
+    slugs = Category.root_categories.map(&:slug)
+    assert_includes slugs, "laces"
+    assert_includes slugs, "buttons"
+  end
+
+  test "subcategories association returns children" do
+    laces = categories(:laces)
+    sub_names = laces.subcategories.map(&:name)
+    assert_includes sub_names, "Cotton Laces"
+    assert_includes sub_names, "Silk Laces"
+  end
+
+  test "parent association returns parent category" do
+    cotton = categories(:cotton_laces)
+    assert_equal categories(:laces).id, cotton.parent.id
+  end
+
+  test "root category has no parent" do
+    assert_nil categories(:laces).parent
+  end
+
+  test "subcategory parent_id is set" do
+    assert_equal categories(:laces).id, categories(:cotton_laces).parent_id
+  end
+
+  test "destroying parent destroys subcategories" do
+    parent = Category.create!(name: "Temp Parent XYZ", slug: "temp-parent-xyz")
+    child  = Category.create!(name: "Temp Child XYZ", slug: "temp-child-xyz", parent: parent)
+    child_id = child.id
+    parent.destroy
+    assert_nil Category.find_by(id: child_id)
   end
 end

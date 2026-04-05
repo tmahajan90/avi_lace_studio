@@ -1,23 +1,62 @@
+# Root categories
+laces:
+  name: Laces
+  slug: laces
+  description: All types of laces for garments
+
+buttons:
+  name: Buttons
+  slug: buttons
+  description: Decorative and functional buttons
+
+brooches:
+  name: Brooches
+  slug: brooches
+  description: Stylish brooches and pins
+
+neck_designs:
+  name: Neck Designs
+  slug: neck-designs
+  description: Ready-to-use neck design patches
+
+toggles:
+  name: Toggles
+  slug: toggles
+  description: Toggles and closures
+
+zippers:
+  name: Zippers
+  slug: zippers
+  description: Zippers of all types
+
+# Subcategories under Laces
 cotton_laces:
   name: Cotton Laces
   slug: cotton-laces
   description: Beautiful handcrafted cotton laces for all occasions
-  image: cotton_laces.jpg
+  parent: laces
 
 silk_laces:
   name: Silk Laces
   slug: silk-laces
   description: Premium silk laces with a lustrous finish
-  image: silk_laces.jpg
+  parent: laces
 
-embroidered_trims:
-  name: Embroidered Trims
-  slug: embroidered-trims
-  description: Intricate embroidered trims for sarees and suits
-  image: embroidered_trims.jpg
+beaded_laces:
+  name: Beaded Laces
+  slug: beaded-laces
+  description: Laces adorned with beads
+  parent: laces
 
-sequin_borders:
-  name: Sequin Borders
-  slug: sequin-borders
-  description: Sparkling sequin borders for festive wear
-  image: sequin_borders.jpg
+# Subcategories under Buttons
+metal_buttons:
+  name: Metal Buttons
+  slug: metal-buttons
+  description: Shiny metal buttons for coats and jackets
+  parent: buttons
+
+fabric_buttons:
+  name: Fabric Buttons
+  slug: fabric-buttons
+  description: Soft fabric-covered buttons
+  parent: buttons

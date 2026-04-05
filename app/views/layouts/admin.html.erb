@@ -4,6 +4,7 @@
     <title>Admin — Avi Lace Studio</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta charset="UTF-8">
+    <meta name="turbo-visit-control" content="reload">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +27,7 @@
         <%= link_to admin_orders_path, class: "admin-sidebar__link" do %>Orders<% end %>
         <%= link_to admin_users_path, class: "admin-sidebar__link" do %>Customers<% end %>
         <hr class="admin-sidebar__divider">
-        <%= link_to root_path, class: "admin-sidebar__link" do %>View Store<% end %>
+        <%= link_to root_path, class: "admin-sidebar__link", data: { turbo: "false" } do %>View Store<% end %>
         <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "admin-sidebar__link admin-sidebar__link--danger" do %>Sign Out<% end %>
       </nav>
     </aside>

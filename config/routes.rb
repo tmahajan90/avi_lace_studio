@@ -47,6 +47,9 @@ Rails.application.routes.draw do
     root to: "dashboard#index"
     resources :products do
       resources :product_images, only: [:create, :destroy]
+      member do
+        patch :update_stock
+      end
     end
     resources :categories
     resources :orders do

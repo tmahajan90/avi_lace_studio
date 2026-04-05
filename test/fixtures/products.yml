@@ -9,6 +9,7 @@ white_cotton_lace:
   category: cotton_laces
   featured: true
   status: 1
+  cloudinary_url: https://res.cloudinary.com/demo/image/upload/white_cotton_lace.jpg
 
 gold_silk_lace:
   name: Gold Silk Lace 2 inch
@@ -21,27 +22,55 @@ gold_silk_lace:
   category: silk_laces
   featured: true
   status: 1
+  cloudinary_url: https://res.cloudinary.com/demo/image/upload/gold_silk_lace.jpg
 
-floral_embroidered_trim:
-  name: Floral Embroidered Trim
-  slug: floral-embroidered-trim
-  description: Beautiful floral embroidered trim for suits and dupattas
+beaded_lace_product:
+  name: Pearl Beaded Lace
+  slug: pearl-beaded-lace
+  description: Elegant pearl beaded lace for bridal wear
+  price: 150.00
+  compare_price: 200.00
+  stock_quantity: 30
+  sku: PBL-001
+  category: beaded_laces
+  featured: false
+  status: 1
+  cloudinary_url: https://res.cloudinary.com/demo/image/upload/beaded_lace.jpg
+
+metal_button_product:
+  name: Gold Metal Button Set
+  slug: gold-metal-button-set
+  description: Set of 6 gold-tone metal buttons
   price: 45.00
   compare_price: 60.00
   stock_quantity: 75
-  sku: FET-001
-  category: embroidered_trims
+  sku: GMB-001
+  category: metal_buttons
   featured: false
   status: 1
+  cloudinary_url: https://res.cloudinary.com/demo/image/upload/metal_button.jpg
 
 out_of_stock_product:
-  name: Silver Sequin Border
-  slug: silver-sequin-border
-  description: Shimmering silver sequin border for lehengas
+  name: Silver Silk Lace
+  slug: silver-silk-lace
+  description: Shimmering silver silk lace for lehengas
   price: 120.00
   compare_price: 150.00
   stock_quantity: 0
-  sku: SSB-001
-  category: sequin_borders
+  sku: SSL-001
+  category: silk_laces
   featured: false
   status: 0
+  cloudinary_url: https://res.cloudinary.com/demo/image/upload/silver_silk_lace.jpg
+
+draft_product:
+  name: Draft Lace Product
+  slug: draft-lace-product
+  description: A draft product not yet published
+  price: 50.00
+  stock_quantity: 10
+  sku: DLP-001
+  category: cotton_laces
+  featured: false
+  status: 0
+  cloudinary_url: https://res.cloudinary.com/demo/image/upload/draft_lace.jpg

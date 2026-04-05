@@ -1,13 +1,11 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   product: white_cotton_lace
-  image: MyString
   position: 1
-  alt_text: MyString
+  alt_text: White Cotton Lace
+  cloudinary_url: https://res.cloudinary.com/demo/image/upload/sample.jpg
 
 two:
   product: gold_silk_lace
-  image: MyString
   position: 1
-  alt_text: MyString
+  alt_text: Gold Silk Lace
+  cloudinary_url: https://res.cloudinary.com/demo/image/upload/sample2.jpg

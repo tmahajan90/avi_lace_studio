@@ -35,7 +35,7 @@
       <% if user_signed_in? %>
         <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "btn btn--outline btn--sm" do %>Sign Out<% end %>
         <% if current_user.admin? %>
-          <%= link_to admin_root_path, class: "btn btn--primary btn--sm" do %>Admin<% end %>
+          <%= link_to admin_root_path, class: "btn btn--primary btn--sm", data: { turbo: "false" } do %>Admin<% end %>
         <% end %>
       <% else %>
         <%= link_to new_user_session_path, class: "btn btn--outline btn--sm" do %>Login<% end %>

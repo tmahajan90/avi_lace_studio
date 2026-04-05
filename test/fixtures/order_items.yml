@@ -16,8 +16,8 @@ paid_order_item_two:
 
 cod_order_item_one:
   order: cod_order
-  product: floral_embroidered_trim
+  product: metal_button_product
   quantity: 1
   unit_price: 45.00
   total_price: 45.00
-  product_name: Floral Embroidered Trim
+  product_name: Gold Metal Button Set

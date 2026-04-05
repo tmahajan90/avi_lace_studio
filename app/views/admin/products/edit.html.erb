@@ -4,14 +4,15 @@
 <%= render "form", product: @product %>
 
 <div class="admin-card" style="margin-top: 24px;">
-  <h3>Product Images</h3>
+  <h3>Additional Images</h3>
 
   <% if @product.product_images.any? %>
     <div class="image-grid">
       <% @product.product_images.each do |img| %>
         <div class="image-thumb">
-          <% if img.image.attached? %>
-            <%= image_tag img.image, style: "width:100%; height:100px; object-fit:cover; border-radius:6px;" %>
+          <% if img.image_url.present? %>
+            <%= image_tag img.image_url.is_a?(String) ? img.image_url : img.image_url,
+                  style: "width:100%; height:100px; object-fit:cover; border-radius:6px;" %>
           <% else %>
             <div style="width:100%; height:100px; background:#f0eded; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#988487; font-size:12px;">No image</div>
           <% end %>
@@ -30,12 +31,9 @@
 
   <hr style="border-color:#f0eded; margin:20px 0;">
   <h4 style="font-size:14px; margin-bottom:12px;">Add Image</h4>
-  <%= form_with url: admin_product_product_images_path(@product), multipart: true do |f| %>
+  <%= form_with url: admin_product_product_images_path(@product) do |f| %>
     <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
-      <div class="form-group" style="flex:1; min-width:200px;">
-        <%= label_tag :image, "Image File", class: "form-label" %>
-        <%= f.file_field :image, name: "product_image[image]", class: "form-input", accept: "image/*", required: true %>
-      </div>
+      <input type="hidden" name="product_image[cloudinary_url]" id="extra_image_cloudinary_url">
       <div class="form-group" style="width:120px;">
         <%= label_tag :position, "Position", class: "form-label" %>
         <%= f.number_field :position, name: "product_image[position]", class: "form-input", min: 0, value: @product.product_images.count %>
@@ -44,12 +42,47 @@
         <%= label_tag :alt_text, "Alt Text", class: "form-label" %>
         <%= f.text_field :alt_text, name: "product_image[alt_text]", class: "form-input" %>
       </div>
+      <div class="form-group" style="display:flex; align-items:flex-end; gap:10px;">
+        <button type="button" id="extra_image_upload_btn" class="btn btn--outline">Upload Image</button>
+        <span id="extra_image_status"></span>
+      </div>
       <div class="form-group">
-        <%= f.submit "Upload", class: "btn btn--primary" %>
+        <%= f.submit "Add Image", class: "btn btn--primary", id: "add_image_submit", disabled: true %>
       </div>
     </div>
   <% end %>
 </div>
+
+<script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript" nonce="<%= content_security_policy_nonce %>"></script>
+<script nonce="<%= content_security_policy_nonce %>">
+  document.addEventListener("turbo:load", function() {
+    var btn = document.getElementById("extra_image_upload_btn");
+    if (!btn) return;
+
+    var folder = "<%= @product.cloudinary_folder %>";
+
+    var widget = cloudinary.createUploadWidget({
+      cloudName:            "<%= ENV['CLOUDINARY_CLOUD_NAME'] %>",
+      uploadPreset:         "avi_lace_studio",
+      folder:               folder,
+      cropping:             false,
+      multiple:             false,
+      resourceType:         "image",
+      clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
+      maxFileSize:          5000000
+    }, function(error, result) {
+      if (!error && result && result.event === "success") {
+        var url = result.info.secure_url;
+        document.getElementById("extra_image_cloudinary_url").value = url;
+        document.getElementById("extra_image_status").innerHTML =
+          '<img src="' + url + '" style="width:60px;height:60px;object-fit:cover;border-radius:6px;vertical-align:middle;"> <span style="color:green;font-size:12px;">✓ Ready</span>';
+        document.getElementById("add_image_submit").disabled = false;
+      }
+    });
+
+    btn.addEventListener("click", function() { widget.open(); });
+  });
+</script>
 
 <style nonce="<%= content_security_policy_nonce %>">
   .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 8px; }
