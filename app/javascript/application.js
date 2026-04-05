@@ -36,4 +36,14 @@ document.addEventListener("turbo:load", () => {
     setTimeout(() => flash.style.opacity = "0", 3000)
     setTimeout(() => flash.remove(), 3500)
   })
+
+  // Mobile category accordion
+  document.querySelectorAll(".navbar__mobile-toggle").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const group = btn.closest(".navbar__mobile-group")
+      const subs  = group.querySelector(".navbar__mobile-subs")
+      group.classList.toggle("open")
+      subs.classList.toggle("hidden")
+    })
+  })
 })

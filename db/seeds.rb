@@ -17,20 +17,106 @@ else
 end
 
 puts "Creating categories..."
-categories = [
-  { name: "Cotton Laces",     description: "Soft and breathable cotton laces for daily wear and ethnic garments." },
-  { name: "Net Laces",        description: "Delicate net laces perfect for bridal and party wear." },
-  { name: "Silk Trims",       description: "Luxurious silk trims for sarees and lehengas." },
-  { name: "Embroidered Lace", description: "Beautifully embroidered laces with floral and geometric patterns." },
-  { name: "Border Trims",     description: "Wide and narrow border trims for dupattas and sarees." },
-  { name: "Ribbon Laces",     description: "Colorful ribbon laces for garment embellishment." },
-]
 
-category_records = categories.map do |attrs|
-  Category.find_or_create_by!(name: attrs[:name]) do |c|
-    c.description = attrs[:description]
+# Main categories with their subcategories
+category_tree = {
+  "Laces" => {
+    description: "All types of laces and trims for garments and accessories.",
+    subcategories: [
+      { name: "Cotton Laces",     description: "Soft and breathable cotton laces for daily wear and ethnic garments." },
+      { name: "Net Laces",        description: "Delicate net laces perfect for bridal and party wear." },
+      { name: "Silk Trims",       description: "Luxurious silk trims for sarees and lehengas." },
+      { name: "Embroidered Lace", description: "Beautifully embroidered laces with floral and geometric patterns." },
+      { name: "Border Trims",     description: "Wide and narrow border trims for dupattas and sarees." },
+      { name: "Ribbon Laces",     description: "Colorful ribbon laces for garment embellishment." },
+      { name: "Beaded Laces",     description: "Laces adorned with beads for a decorative finish." },
+      { name: "Chain Laces",      description: "Metal chain laces for contemporary and ethnic garments." },
+      { name: "Guipure Laces",    description: "Heavy corded laces with open mesh patterns." },
+      { name: "Metal Laces",      description: "Laces with metallic threads for festive and bridal wear." },
+      { name: "Tassel Laces",     description: "Laces with hanging tassels for decorative borders." },
+      { name: "Sequins Laces",    description: "Laces embellished with sequins for glamorous looks." },
+    ]
+  },
+  "Brooches" => {
+    description: "Decorative pins and brooches for garments and accessories.",
+    subcategories: [
+      { name: "Animal Brooches",     description: "Brooches shaped like animals for a playful look." },
+      { name: "Badge Brooches",      description: "Badge-style brooches for formal and casual wear." },
+      { name: "Bird Brooches",       description: "Elegant bird-shaped brooches in metal and enamel." },
+      { name: "Chain Brooches",      description: "Brooches with decorative chain accents." },
+      { name: "Collar Brooches",     description: "Brooches designed for collar and neckline detailing." },
+      { name: "Diamond Brooches",    description: "Crystal and diamond-finish brooches for bridal and party wear." },
+      { name: "Enamel Brooches",     description: "Colourful enamel brooches in various designs." },
+      { name: "Ethnic Wear Brooches",description: "Traditional brooches suited for ethnic Indian wear." },
+      { name: "Flower Brooches",     description: "Floral brooches in metal, pearl, and fabric." },
+      { name: "Insect Brooches",     description: "Detailed insect-shaped brooches including butterflies and bees." },
+      { name: "Metal Brooches",      description: "Classic metal brooches in gold, silver, and antique finishes." },
+      { name: "Pearl Brooches",      description: "Brooches featuring pearl accents for elegant styling." },
+      { name: "Vintage Brooches",    description: "Vintage-inspired brooches with antique detailing." },
+    ]
+  },
+  "Buttons" => {
+    description: "A wide range of buttons in metal, wood, pearl, and designer styles.",
+    subcategories: [
+      { name: "Metal Buttons",     description: "Durable metal buttons in gold, silver, gunmetal, and antique finishes." },
+      { name: "Wooden Buttons",    description: "Natural and classic wooden buttons including coco shell styles." },
+      { name: "Pearl Buttons",     description: "Glossy pearlescent shirt buttons in various sizes." },
+      { name: "Engraved Buttons",  description: "Metal buttons with engraved patterns and designs." },
+      { name: "Designer Buttons",  description: "Fancy designer buttons for couture and fashion garments." },
+      { name: "Jeans Buttons",     description: "Sturdy metal jeans buttons and rivets for denim wear." },
+    ]
+  },
+  "Neck Designs" => {
+    description: "Ready-made neckline embellishments for suits, kurtis, and ethnic wear.",
+    subcategories: [
+      { name: "Beaded Neck Designs",     description: "Necklines adorned with beads for festive and bridal wear." },
+      { name: "Cord Neck Designs",       description: "Cord-work necklines with intricate knotting patterns." },
+      { name: "Embroidery Neck Designs", description: "Hand and machine embroidered necklines for ethnic garments." },
+      { name: "Handmade Neck Designs",   description: "Handcrafted necklines with artisan detailing." },
+      { name: "Metal Neck Designs",      description: "Metal plate and chain necklines for contemporary styles." },
+      { name: "Tassel Neck Designs",     description: "Necklines featuring tassel accents for a boho look." },
+      { name: "Crochet Neck Designs",    description: "Delicate crochet necklines for casual and ethnic wear." },
+    ]
+  },
+  "Toggles" => {
+    description: "Coat toggles, frog closures, and toggle buttons for outerwear and ethnic garments.",
+    subcategories: [
+      { name: "Coat Toggles",        description: "Traditional horn and leather coat toggles for jackets and coats." },
+      { name: "Frog Closures",       description: "Decorative braided frog closure fastenings for ethnic wear." },
+      { name: "PU Leather Toggles",  description: "PU leather toggle buttons for coats and jackets." },
+      { name: "Wooden Toggle Buttons", description: "Oval wooden toggle buttons in natural and lacquered finishes." },
+    ]
+  },
+  "Zippers" => {
+    description: "Quality zippers for garments, bags, and accessories.",
+    subcategories: [
+      { name: "YKK Zippers",         description: "Genuine YKK brand zippers in #2, #3, and #5 sizes." },
+      { name: "Metal Zippers",       description: "Metal tooth zippers in gold, silver, and gunmetal finishes." },
+      { name: "Nylon Coil Zippers",  description: "Lightweight nylon coil zippers for garments and bags." },
+      { name: "Invisible Zippers",   description: "Concealed invisible zippers for clean garment finishes." },
+      { name: "Waterproof Zippers",  description: "Water-resistant zippers for outdoor and technical garments." },
+      { name: "Designer Zippers",    description: "Fancy decorative zippers for fashion garments and accessories." },
+    ]
+  },
+}
+
+category_records = []
+
+category_tree.each do |parent_name, data|
+  parent = Category.find_or_create_by!(name: parent_name) do |c|
+    c.description = data[:description]
+  end
+
+  data[:subcategories].each do |sub|
+    record = Category.find_or_create_by!(name: sub[:name]) do |c|
+      c.description = sub[:description]
+      c.parent      = parent
+    end
+    category_records << record
   end
 end
+
+puts "  #{Category.count} categories created (#{category_tree.keys.count} parent, #{category_records.count} sub)"
 
 puts "Creating sample products..."
 

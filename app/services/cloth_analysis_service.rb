@@ -22,15 +22,15 @@ class ClothAnalysisService < ApplicationService
   API_URL = "https://generativelanguage.googleapis.com/v1beta/models/#{MODEL}:generateContent"
 
   PROMPT = <<~PROMPT.freeze
-    You are a textile and lace expert for an Indian fabric store called Avi Lace Studio.
+    You are a textile and accessories expert for an Indian fabric store called Avi Lace Studio.
     Analyze this cloth image and return ONLY a valid JSON object with these exact keys:
 
     {
       "dominant_colors": ["<color name>"],
       "texture_style": "<brief description of fabric texture and weave, e.g. 'sheer chiffon with floral print'>",
       "occasion_tags": ["<one or more of: ethnic, bridal, casual, formal, festive, party>"],
-      "recommended_lace_types": ["<one or more of: Cotton Laces, Net Laces, Silk Trims, Embroidered Lace, Border Trims, Ribbon Laces>"],
-      "recommended_lace_keywords": ["<2-5 short search terms describing lace styles matching this cloth, e.g. 'golden border', 'floral motif', 'scallop edge'>"]
+      "recommended_lace_types": ["<one or more of: Cotton Laces, Net Laces, Silk Trims, Embroidered Lace, Border Trims, Ribbon Laces, Beaded Laces, Chain Laces, Guipure Laces, Metal Laces, Tassel Laces, Sequins Laces, Animal Brooches, Badge Brooches, Bird Brooches, Chain Brooches, Collar Brooches, Diamond Brooches, Enamel Brooches, Ethnic Wear Brooches, Flower Brooches, Insect Brooches, Metal Brooches, Pearl Brooches, Vintage Brooches, Metal Buttons, Wooden Buttons, Pearl Buttons, Engraved Buttons, Designer Buttons, Jeans Buttons, Beaded Neck Designs, Cord Neck Designs, Embroidery Neck Designs, Handmade Neck Designs, Metal Neck Designs, Tassel Neck Designs, Crochet Neck Designs, Coat Toggles, Frog Closures, PU Leather Toggles, Wooden Toggle Buttons, YKK Zippers, Metal Zippers, Nylon Coil Zippers, Invisible Zippers, Waterproof Zippers, Designer Zippers>"],
+      "recommended_lace_keywords": ["<2-5 short search terms describing accessories matching this cloth, e.g. 'golden border', 'floral brooch', 'metal neck design', 'scallop edge'>"]
     }
 
     Rules:

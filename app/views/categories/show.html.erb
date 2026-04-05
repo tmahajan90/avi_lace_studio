@@ -3,9 +3,18 @@
 <div class="page-layout">
   <aside class="filter-sidebar">
     <h3 class="filter-sidebar__title">Categories</h3>
-    <% Category.root_categories.each do |cat| %>
+    <% @root_cats.each do |cat| %>
+      <% active_root = (cat == @category) || (cat == @category.parent) %>
       <%= link_to cat.name, category_path(cat.slug),
-            class: "filter-check #{'filter-check--active' if cat == @category}" %>
+            class: "filter-cat-link #{'filter-cat-link--active' if cat == @category}" %>
+      <% if cat.subcategories.any? && active_root %>
+        <div class="filter-subcats">
+          <% cat.subcategories.each do |sub| %>
+            <%= link_to sub.name, category_path(sub.slug),
+                  class: "filter-subcat-link #{'filter-subcat-link--active' if sub == @category}" %>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   </aside>
 
@@ -13,7 +22,12 @@
     <nav class="breadcrumb">
       <%= link_to "Home", root_path %> &rsaquo;
       <%= link_to "Products", products_path %> &rsaquo;
-      <span><%= @category.name %></span>
+      <% if @category.parent.present? %>
+        <%= link_to @category.parent.name, category_path(@category.parent.slug) %> &rsaquo;
+        <span><%= @category.name %></span>
+      <% else %>
+        <span><%= @category.name %></span>
+      <% end %>
     </nav>
 
     <div class="product-listing__header">
@@ -42,6 +56,37 @@
 </div>
 
 <style nonce="<%= content_security_policy_nonce %>">
-  .filter-check--active { color: var(--color-rose); font-weight: 600; }
+  .filter-cat-link {
+    display: block;
+    padding: 8px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    transition: color .2s;
+  }
+  .filter-cat-link:hover { color: var(--color-rose); }
+  .filter-cat-link--active { color: var(--color-rose); font-weight: 700; }
+
+  .filter-subcats {
+    margin: 2px 0 8px 12px;
+    border-left: 2px solid var(--color-border);
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .filter-subcat-link {
+    display: block;
+    padding: 6px 0;
+    font-size: 13px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .filter-subcat-link:hover { color: var(--color-rose); }
+  .filter-subcat-link--active { color: var(--color-rose); font-weight: 600; }
+
   .category-desc { color: var(--color-text-muted); font-size: 14px; margin-bottom: 24px; }
 </style>

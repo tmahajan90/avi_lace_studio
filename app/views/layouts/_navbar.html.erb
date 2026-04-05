@@ -46,8 +46,17 @@
 
   <nav class="navbar__categories" id="categories-nav">
     <div class="navbar__categories-inner">
-      <% Category.root_categories.each do |cat| %>
-        <%= link_to cat.name, category_path(cat.slug), class: "navbar__cat-link" %>
+      <% Category.root_categories.includes(:subcategories).each do |cat| %>
+        <div class="navbar__cat-item">
+          <%= link_to cat.name, category_path(cat.slug), class: "navbar__cat-link #{'navbar__cat-link--has-sub' if cat.subcategories.any?}" %>
+          <% if cat.subcategories.any? %>
+            <div class="navbar__dropdown">
+              <% cat.subcategories.each do |sub| %>
+                <%= link_to sub.name, category_path(sub.slug), class: "navbar__dropdown-link" %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
       <% end %>
       <%= link_to "All Products", products_path, class: "navbar__cat-link" %>
       <%= link_to "✦ Lace Finder", lace_finder_path, class: "navbar__cat-link navbar__cat-link--highlight" %>
@@ -55,14 +64,29 @@
   </nav>
 </header>
 
-<div class="navbar__mobile-menu" id="mobile-menu">
+<div class="navbar__mobile-menu hidden" id="mobile-menu">
   <div class="navbar__mobile-inner">
     <form action="<%= products_path %>" method="get" class="navbar__mobile-search">
       <input type="text" name="q[name_cont]" placeholder="Search..." class="navbar__search-input">
       <button type="submit" class="navbar__search-btn">Search</button>
     </form>
-    <% Category.root_categories.each do |cat| %>
-      <%= link_to cat.name, category_path(cat.slug), class: "navbar__mobile-link" %>
+    <% Category.root_categories.includes(:subcategories).each do |cat| %>
+      <% if cat.subcategories.any? %>
+        <div class="navbar__mobile-group">
+          <button class="navbar__mobile-toggle" type="button">
+            <%= cat.name %>
+            <svg class="navbar__mobile-chevron" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="navbar__mobile-subs hidden">
+            <%= link_to cat.name + " — All", category_path(cat.slug), class: "navbar__mobile-link navbar__mobile-link--sub navbar__mobile-link--all" %>
+            <% cat.subcategories.each do |sub| %>
+              <%= link_to sub.name, category_path(sub.slug), class: "navbar__mobile-link navbar__mobile-link--sub" %>
+            <% end %>
+          </div>
+        </div>
+      <% else %>
+        <%= link_to cat.name, category_path(cat.slug), class: "navbar__mobile-link" %>
+      <% end %>
     <% end %>
     <%= link_to "All Products", products_path, class: "navbar__mobile-link" %>
     <%= link_to "✦ Lace Finder", lace_finder_path, class: "navbar__mobile-link", style: "color: var(--color-rose); font-weight: 600;" %>

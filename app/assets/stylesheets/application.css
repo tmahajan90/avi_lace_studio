@@ -237,6 +237,7 @@ ul { list-style: none; }
 .navbar__categories {
   background: var(--color-cream);
   border-top: 1px solid var(--color-border);
+  overflow: visible;
 }
 .navbar__categories-inner {
   max-width: 1280px;
@@ -244,7 +245,7 @@ ul { list-style: none; }
   padding: 0 24px;
   display: flex;
   gap: 4px;
-  overflow-x: auto;
+  overflow: visible;
 }
 .navbar__cat-link {
   display: inline-block;
@@ -973,6 +974,89 @@ ul { list-style: none; }
   }
 }
 .navbar__cat-link--highlight { color: var(--color-rose); font-weight: 600; }
+
+/* ===================== CATEGORY DROPDOWN ===================== */
+.navbar__cat-item {
+  position: relative;
+}
+.navbar__cat-link--has-sub::after {
+  content: "▾";
+  margin-left: 4px;
+  font-size: 11px;
+  opacity: 0.6;
+}
+.navbar__dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 200;
+  padding: 6px 0;
+}
+.navbar__cat-item:hover .navbar__dropdown {
+  display: block;
+}
+.navbar__dropdown-link {
+  display: block;
+  padding: 9px 16px;
+  font-size: 13px;
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+.navbar__dropdown-link:hover {
+  background: var(--color-cream);
+  color: var(--color-rose);
+}
+
+/* ===================== MOBILE ACCORDION ===================== */
+.navbar__mobile-group {
+  width: 100%;
+}
+.navbar__mobile-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--color-text);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  transition: background .2s;
+}
+.navbar__mobile-toggle:hover { background: var(--color-cream); }
+.navbar__mobile-chevron {
+  flex-shrink: 0;
+  transition: transform .2s;
+}
+.navbar__mobile-group.open .navbar__mobile-chevron {
+  transform: rotate(180deg);
+}
+.navbar__mobile-subs {
+  padding-left: 12px;
+}
+.navbar__mobile-subs.hidden { display: none; }
+.navbar__mobile-link--sub {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  padding: 9px 12px;
+}
+.navbar__mobile-link--all {
+  font-weight: 600;
+  color: var(--color-brown-dark);
+}
 
 @media (max-width: 769px) {
   .lace-finder-card { padding: 24px 16px; }
