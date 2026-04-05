@@ -1,7 +1,9 @@
 <article class="product-card">
   <%= link_to product_path(product.slug), class: "product-card__link" do %>
     <div class="product-card__image">
-      <% if product.main_image.attached? %>
+      <% if product.image_url.present? %>
+        <%= image_tag product.image_url, alt: product.name, class: "product-card__img" %>
+      <% elsif product.main_image.attached? %>
         <%= image_tag product.main_image, alt: product.name, class: "product-card__img" %>
       <% elsif product.product_images.any? %>
         <%= image_tag product.product_images.first.image, alt: product.name, class: "product-card__img" %>

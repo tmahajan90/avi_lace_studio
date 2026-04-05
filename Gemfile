@@ -35,6 +35,9 @@ gem "razorpay"
 # HTTP client for Gemini API (visual lace finder)
 gem "httparty"
 
+# Cloudinary CDN for image storage
+gem "cloudinary"
+
 # Search
 gem "ransack"
 

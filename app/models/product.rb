@@ -27,6 +27,20 @@ class Product < ApplicationRecord
     %w[category]
   end
 
+  def image_url
+    cloudinary_url.presence
+  end
+
+  def cloudinary_folder
+    cat = category
+    return "avi_lace_studio/products" unless cat
+    if cat.parent.present?
+      "avi_lace_studio/#{cat.parent.name.parameterize.underscore}/#{cat.name.parameterize.underscore}"
+    else
+      "avi_lace_studio/#{cat.name.parameterize.underscore}"
+    end
+  end
+
   def in_stock?
     stock_quantity > 0
   end

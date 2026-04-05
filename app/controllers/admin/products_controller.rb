@@ -44,7 +44,7 @@ module Admin
     def product_params
       params.require(:product).permit(:name, :description, :price, :compare_price,
                                       :stock_quantity, :sku, :category_id, :featured,
-                                      :status, :main_image)
+                                      :status, :main_image, :cloudinary_url)
     end
   end
 end

@@ -18,7 +18,23 @@
     </div>
     <div class="form-group">
       <%= f.label :category_id, "Category", class: "form-label" %>
-      <%= f.collection_select :category_id, Category.all, :id, :name, { include_blank: "Select Category" }, class: "form-select" %>
+      <%
+        # Build a map of category_id -> cloudinary folder path
+        cat_folder_map = {}
+        Category.includes(:parent).each do |cat|
+          folder = if cat.parent.present?
+            "avi_lace_studio/#{cat.parent.name.parameterize.underscore}/#{cat.name.parameterize.underscore}"
+          else
+            "avi_lace_studio/#{cat.name.parameterize.underscore}"
+          end
+          cat_folder_map[cat.id] = folder
+        end
+      %>
+      <%= f.collection_select :category_id, Category.all.order(:name), :id, :name,
+            { include_blank: "Select Category" },
+            class: "form-select",
+            id: "product_category_id",
+            data: { folder_map: cat_folder_map.to_json } %>
     </div>
     <div class="form-group">
       <%= f.label :status, "Status", class: "form-label" %>
@@ -47,8 +63,24 @@
       <%= f.text_area :description, class: "form-textarea", rows: 5 %>
     </div>
     <div class="form-group form-group--full">
-      <%= f.label :main_image, "Main Image", class: "form-label" %>
-      <%= f.file_field :main_image, class: "form-input", accept: "image/*" %>
+      <%= f.label :cloudinary_url, "Product Image", class: "form-label" %>
+
+      <%# Show current image if present %>
+      <% if product.image_url.present? %>
+        <div class="current-image">
+          <%= image_tag product.image_url, class: "current-image__preview", alt: "Current image" %>
+          <p class="current-image__label">Current image — upload a new one to replace it</p>
+        </div>
+      <% end %>
+
+      <%# Hidden field stores the Cloudinary URL after upload %>
+      <%= f.hidden_field :cloudinary_url, id: "cloudinary_url_field" %>
+
+      <%# Upload button — triggers Cloudinary widget %>
+      <button type="button" id="upload_widget_btn" class="btn btn--outline">
+        <%= product.image_url.present? ? "Replace Image" : "Upload Image" %>
+      </button>
+      <span id="upload_status" class="upload-status"></span>
     </div>
   </div>
 
@@ -58,6 +90,46 @@
   </div>
 <% end %>
 
+<script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+<script nonce="<%= content_security_policy_nonce %>">
+  document.addEventListener("turbo:load", function() {
+    var btn       = document.getElementById("upload_widget_btn");
+    var catSelect = document.getElementById("product_category_id");
+    if (!btn || !catSelect) return;
+
+    var folderMap = JSON.parse(catSelect.dataset.folderMap || "{}");
+
+    function currentFolder() {
+      var catId = catSelect.value;
+      return folderMap[catId] || "avi_lace_studio/products";
+    }
+
+    function openWidget() {
+      var widget = cloudinary.createUploadWidget({
+        cloudName:            "<%= ENV['CLOUDINARY_CLOUD_NAME'] %>",
+        uploadPreset:         "avi_lace_studio",
+        folder:               currentFolder(),
+        cropping:             false,
+        multiple:             false,
+        resourceType:         "image",
+        clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
+        maxFileSize:          5000000
+      }, function(error, result) {
+        if (!error && result && result.event === "success") {
+          var url = result.info.secure_url;
+          document.getElementById("cloudinary_url_field").value = url;
+          document.getElementById("upload_status").innerHTML =
+            '<img src="' + url + '" style="width:80px;height:80px;object-fit:cover;border-radius:6px;margin-left:12px;vertical-align:middle;"> <span style="color:green;font-size:13px;">✓ Uploaded to: ' + currentFolder() + '</span>';
+          btn.textContent = "Replace Image";
+        }
+      });
+      widget.open();
+    }
+
+    btn.addEventListener("click", openWidget);
+  });
+</script>
+
 <style nonce="<%= content_security_policy_nonce %>">
   .product-form { background: white; border-radius: 11px; padding: 28px; box-shadow: 0 1px 3px rgba(38,32,26,.08); }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
@@ -65,4 +137,8 @@
   .form-group--check { display: flex; align-items: center; }
   .form-check-label { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
   .form-actions { display: flex; gap: 12px; margin-top: 24px; }
+  .current-image { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+  .current-image__preview { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1.5px solid #e4e0dd; }
+  .current-image__label { font-size: 12px; color: #726365; }
+  .upload-status { display: inline-flex; align-items: center; }
 </style>

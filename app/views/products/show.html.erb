@@ -13,7 +13,9 @@
     <!-- Image Gallery -->
     <div class="product-gallery">
       <div class="product-gallery__main" id="main-image">
-        <% if @product.main_image.attached? %>
+        <% if @product.image_url.present? %>
+          <%= image_tag @product.image_url, alt: @product.name, class: "product-gallery__img", id: "primary-image" %>
+        <% elsif @product.main_image.attached? %>
           <%= image_tag @product.main_image, alt: @product.name, class: "product-gallery__img", id: "primary-image" %>
         <% elsif @product.product_images.any? %>
           <%= image_tag @product.product_images.first.image, alt: @product.name, class: "product-gallery__img", id: "primary-image" %>
