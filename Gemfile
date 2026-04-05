@@ -26,14 +26,14 @@ gem "devise"
 # Rate limiting
 gem "rack-attack"
 
-# Anthropic Claude via AWS Bedrock
-gem "aws-sdk-bedrockruntime"
-
 # Pagination
 gem "kaminari"
 
 # Payment gateway (Razorpay)
 gem "razorpay"
+
+# HTTP client for Gemini API (visual lace finder)
+gem "httparty"
 
 # Search
 gem "ransack"
