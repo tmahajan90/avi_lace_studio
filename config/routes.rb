@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   resources :categories, only: [:show]
 
   # AI-powered lace finder
-  resource :lace_finder, only: [:show, :create], path: "lace-finder"
+  resource :lace_finder, only: [:show, :create], path: "lace-finder", controller: "lace_finder"
 
   # Cart
   resource :cart, only: [:show] do

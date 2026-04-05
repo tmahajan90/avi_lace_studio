@@ -59,7 +59,7 @@ class ClothAnalysisService < ApplicationService
     Rails.logger.error("[ClothAnalysisService] HTTP error: #{e.class} — #{e.message}")
     failure("AI service timed out. Please try again.")
   rescue StandardError => e
-    Rails.logger.error("[ClothAnalysisService] Error: #{e.class} — #{e.message}")
+    Rails.logger.error("[ClothAnalysisService] Error: #{e.class} — #{e.message}\n#{e.backtrace.first(5).join("\n")}")
     failure("Could not analyze the image. Please try again.")
   end
 
@@ -108,12 +108,13 @@ class ClothAnalysisService < ApplicationService
     end
 
     raw_json = body.dig("candidates", 0, "content", "parts", 0, "text").to_s.strip
+    Rails.logger.info("[ClothAnalysisService] Raw Gemini response: #{raw_json[0..300]}")
     raw_json = raw_json.gsub(/\A```(?:json)?\s*/i, "").gsub(/\s*```\z/, "").strip
     parsed   = JSON.parse(raw_json)
     normalize!(parsed)
     success(parsed.symbolize_keys)
   rescue JSON::ParserError => e
-    Rails.logger.error("[ClothAnalysisService] Invalid JSON from Gemini: #{e.message}")
+    Rails.logger.error("[ClothAnalysisService] Invalid JSON from Gemini: #{e.message} | raw: #{raw_json[0..300]}")
     failure("Could not parse AI response. Please try again.")
   end
 

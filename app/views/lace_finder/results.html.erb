@@ -9,55 +9,79 @@
     <% end %>
   </div>
 
-  <%# AI Analysis summary card %>
-  <div class="lace-analysis-card">
-    <% if @analysis[:dominant_colors].any? %>
-      <div class="lace-analysis-card__section">
-        <span class="lace-analysis-card__label">Colors Detected</span>
-        <div class="lace-analysis-card__tags">
+  <%# Split layout: uploaded cloth on left, AI analysis on right %>
+  <div class="lace-results-split">
+    <div class="lace-results-split__cloth">
+      <p class="lace-results-split__label">Your Cloth</p>
+      <% if @uploaded_image.present? %>
+        <img src="<%= @uploaded_image %>" alt="Uploaded cloth" class="lace-results-split__cloth-img">
+      <% end %>
+
+      <%# Color swatches %>
+      <% if @analysis[:dominant_colors].any? %>
+        <div class="lace-results-split__colors">
           <% @analysis[:dominant_colors].each do |color| %>
-            <span class="lace-tag"><%= color.capitalize %></span>
+            <span class="lace-color-swatch" title="<%= color %>"></span>
           <% end %>
+          <span class="lace-results-split__color-label"><%= @analysis[:dominant_colors].map(&:capitalize).join(", ") %></span>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
 
-    <% if @analysis[:texture_style].present? %>
-      <div class="lace-analysis-card__section">
-        <span class="lace-analysis-card__label">Fabric Style</span>
-        <span class="lace-analysis-card__value"><%= @analysis[:texture_style] %></span>
-      </div>
-    <% end %>
+    <div class="lace-results-split__arrow">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+      </svg>
+    </div>
 
-    <% if @analysis[:occasion_tags].any? %>
-      <div class="lace-analysis-card__section">
-        <span class="lace-analysis-card__label">Occasion</span>
-        <div class="lace-analysis-card__tags">
-          <% @analysis[:occasion_tags].each do |tag| %>
-            <span class="lace-tag lace-tag--accent"><%= tag.capitalize %></span>
-          <% end %>
+    <div class="lace-results-split__details">
+      <% if @analysis[:texture_style].present? %>
+        <div class="lace-detail-row">
+          <span class="lace-detail-row__icon">🧵</span>
+          <div>
+            <p class="lace-detail-row__label">Fabric Style</p>
+            <p class="lace-detail-row__value"><%= @analysis[:texture_style] %></p>
+          </div>
         </div>
-      </div>
-    <% end %>
+      <% end %>
 
-    <% if @analysis[:recommended_lace_types].any? %>
-      <div class="lace-analysis-card__section">
-        <span class="lace-analysis-card__label">Recommended Types</span>
-        <div class="lace-analysis-card__tags">
-          <% @analysis[:recommended_lace_types].each do |type| %>
-            <span class="lace-tag lace-tag--category"><%= type %></span>
-          <% end %>
+      <% if @analysis[:occasion_tags].any? %>
+        <div class="lace-detail-row">
+          <span class="lace-detail-row__icon">✨</span>
+          <div>
+            <p class="lace-detail-row__label">Occasion</p>
+            <div class="lace-analysis-card__tags">
+              <% @analysis[:occasion_tags].each do |tag| %>
+                <span class="lace-tag lace-tag--accent"><%= tag.capitalize %></span>
+              <% end %>
+            </div>
+          </div>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+
+      <% if @analysis[:recommended_lace_types].any? %>
+        <div class="lace-detail-row">
+          <span class="lace-detail-row__icon">🎀</span>
+          <div>
+            <p class="lace-detail-row__label">Best Lace Types</p>
+            <div class="lace-analysis-card__tags">
+              <% @analysis[:recommended_lace_types].each do |type| %>
+                <span class="lace-tag lace-tag--category"><%= type %></span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= link_to "Try Another Photo", lace_finder_path, class: "btn btn--outline btn--sm lace-results-split__retry" %>
+    </div>
   </div>
 
-  <%# Results header %>
+  <%# Matched products %>
   <div class="lace-finder-results-header">
     <h2 class="lace-finder-results-header__title">
       <%= @products.size %> Matching Product<%= @products.size == 1 ? "" : "s" %> Found
     </h2>
-    <%= link_to "Try Another Photo", lace_finder_path, class: "btn btn--outline btn--sm" %>
   </div>
 
   <% if @products.any? %>

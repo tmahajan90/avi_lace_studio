@@ -65,7 +65,7 @@
       <%= link_to cat.name, category_path(cat.slug), class: "navbar__mobile-link" %>
     <% end %>
     <%= link_to "All Products", products_path, class: "navbar__mobile-link" %>
-    <%= link_to "✦ Lace Finder", lace_finder_path, class: "navbar__mobile-link" style: "color: var(--color-rose); font-weight: 600;" %>
+    <%= link_to "✦ Lace Finder", lace_finder_path, class: "navbar__mobile-link", style: "color: var(--color-rose); font-weight: 600;" %>
     <hr>
     <% if user_signed_in? %>
       <%= link_to "My Profile", account_profile_path, class: "navbar__mobile-link" %>

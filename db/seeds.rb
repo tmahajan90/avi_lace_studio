@@ -33,6 +33,19 @@ category_records = categories.map do |attrs|
 end
 
 puts "Creating sample products..."
+
+# Dummy lace images sourced from lacesandtrimsbysfindia.com (via Fynd CDN)
+lace_image_urls = [
+  "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/RDO4uqMQw-product.jpeg",
+  "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/KFuWPx_te-product.jpeg",
+  "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/Y9g8bW88D-product.jpeg",
+  "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/Rp7GcCW28-product.jpeg",
+  "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/YCg9nV8s6e-product.jpeg",
+  "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/a-ZfxwntM-product.jpeg",
+  "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/oHXwEtRVr-product.jpeg",
+  "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/oR90S4VtK-product.jpeg",
+]
+
 sample_products = [
   { name: "White Cotton Crochet Lace 2 inch", price: 45.00, compare_price: 65.00, stock_quantity: 250, featured: true,  description: "Classic white cotton crochet lace, 2 inch width. Sold per meter. Ideal for kurtas and ethnic wear." },
   { name: "Cream Net Lace Trim 3 inch",       price: 85.00, compare_price: nil,   stock_quantity: 180, featured: true,  description: "Elegant cream net lace trim, 3 inch width. Perfect for bridal dupatta borders." },
@@ -44,9 +57,11 @@ sample_products = [
   { name: "Off White Crochet Border 3 inch",  price: 60.00, compare_price: nil,   stock_quantity: 160, featured: false, description: "Handcrafted off-white crochet border lace. 3 inch width, per meter." },
 ]
 
+require "open-uri"
+
 sample_products.each_with_index do |attrs, i|
   cat = category_records[i % category_records.length]
-  Product.find_or_create_by!(name: attrs[:name]) do |p|
+  product = Product.find_or_create_by!(name: attrs[:name]) do |p|
     p.price          = attrs[:price]
     p.compare_price  = attrs[:compare_price]
     p.stock_quantity = attrs[:stock_quantity]
@@ -55,6 +70,18 @@ sample_products.each_with_index do |attrs, i|
     p.category       = cat
     p.status         = :active
     p.sku            = "ALS-#{format('%04d', i + 1)}"
+  end
+
+  if product.main_image.blank?
+    image_url = lace_image_urls[i % lace_image_urls.length]
+    begin
+      downloaded = URI.open(image_url, "User-Agent" => "Mozilla/5.0")
+      filename   = "lace_#{i + 1}.jpg"
+      product.main_image.attach(io: downloaded, filename: filename, content_type: "image/jpeg")
+      puts "  Attached image to: #{product.name}"
+    rescue => e
+      puts "  Could not attach image to #{product.name}: #{e.message}"
+    end
   end
 end
 

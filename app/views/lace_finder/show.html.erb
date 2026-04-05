@@ -15,9 +15,11 @@
 
     <%= form_with url: lace_finder_path, method: :post,
                   html: { enctype: "multipart/form-data" },
+                  local: true,
                   data: {
+                    turbo: false,
                     controller: "lace-finder",
-                    action: "submit->lace-finder#submitStart turbo:submit-end->lace-finder#submitEnd"
+                    action: "submit->lace-finder#submitStart"
                   } do |f| %>
 
       <%# Hidden real file input — visually replaced by the styled label below %>

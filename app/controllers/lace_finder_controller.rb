@@ -14,8 +14,11 @@ class LaceFinderController < ApplicationController
       render :show, status: :unprocessable_entity and return
     end
 
+    raw_image       = file.read
+    @uploaded_image = "data:#{file.content_type};base64,#{Base64.strict_encode64(raw_image)}"
+
     analysis_result = ClothAnalysisService.call(
-      image_data:   Base64.strict_encode64(file.read),
+      image_data:   Base64.strict_encode64(raw_image),
       content_type: file.content_type
     )
 
